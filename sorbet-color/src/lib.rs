@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Color {
     Rgba {r: f32, g: f32, b: f32, a: f32},
     Hsva {h: f32, s: f32, v: f32, a: f32},
