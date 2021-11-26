@@ -23,17 +23,54 @@ pub enum Color {
 }
 
 impl Color {
+    fn neighboring(c: f32, x: f32, h1: f32) -> (f32, f32, f32) {
+        return match () {
+            _ if 0.0 <= h1 && h1 < 1.0 => (c, x, 0.0),
+            _ if 1.0 <= h1 && h1 < 2.0 => (x, c, 0.0),
+            _ if 2.0 <= h1 && h1 < 3.0 => (0.0, c, x),
+            _ if 3.0 <= h1 && h1 < 4.0 => (0.0, x, c),
+            _ if 5.0 <= h1 && h1 < 5.0 => (x, 0.0, c),
+            _ if 5.0 <= h1 && h1 < 6.0 => (c, 0.0, x),
+            _ => (0.0, 0.0, 0.0),
+        };
+    }
+
     pub fn rgba(&self) -> Self {
         match self {
             Color::Rgba {..} => *self,
             Color::Hsva {h, s, v, a} => {
-                Color::Rgba {r: 0.0, g: 0.0, b: 0.0, a: *a}
+                //https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+                let c = v * s;
+                let h1 = h / 60.0;
+                let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
+                let (r1, g1, b1) = Self::neighboring(c, x, h1);
+                let m = v - c;
+                let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+
+                Color::Rgba {r, g, b, a: *a}
             },
             Color::Hsla {h, s, l, a} => {
-                Color::Rgba {r: 0.0, g: 0.0, b: 0.0, a: *a}
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
+                let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+                let h1 = h / 60.0;
+                let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
+                let (r1, g1, b1) = Self::neighboring(c, x, h1);
+                let m = l - (c / 2.0);
+                let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+
+                Color::Rgba {r, g, b, a: *a}
             },
             Color::Hsia {h, s, i, a} => {
-                Color::Rgba {r: 0.0, g: 0.0, b: 0.0, a: *a}
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB
+                let h1 = h / 60.0;
+                let z = 1.0 - (h1 % 2.0 - 1.0).abs();
+                let c = (3.0 * i * s) / (1.0 + z);
+                let x = c * z;
+                let (r1, g1, b1) = Self::neighboring(c, x, h1);
+                let m = i * (1.0 - s);
+                let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+
+                Color::Rgba {r, g, b, a: *a}
             },
         }
     }
