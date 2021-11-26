@@ -19,7 +19,7 @@ pub enum Color {
     Rgba {r: f32, g: f32, b: f32, a: f32},
     Hsva {h: f32, s: f32, v: f32, a: f32},
     Hsla {h: f32, s: f32, l: f32, a: f32},
-    Hsia {h: f32, s: f32, i: f32, a: f32},
+    // Hsia {h: f32, s: f32, i: f32, a: f32},
 }
 
 impl Color {
@@ -60,18 +60,18 @@ impl Color {
 
                 Color::Rgba {r, g, b, a: *a}
             },
-            Color::Hsia {h, s, i, a} => {
-                // https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB
-                let h1 = h / 60.0;
-                let z = 1.0 - (h1 % 2.0 - 1.0).abs();
-                let c = (3.0 * i * s) / (1.0 + z);
-                let x = c * z;
-                let (r1, g1, b1) = Self::neighboring(c, x, h1);
-                let m = i * (1.0 - s);
-                let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+            // Color::Hsia {h, s, i, a} => {
+            //     // https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB
+            //     let h1 = h / 60.0;
+            //     let z = 1.0 - (h1 % 2.0 - 1.0).abs();
+            //     let c = (3.0 * i * s) / (1.0 + z);
+            //     let x = c * z;
+            //     let (r1, g1, b1) = Self::neighboring(c, x, h1);
+            //     let m = i * (1.0 - s);
+            //     let (r, g, b) = (r1 + m, g1 + m, b1 + m);
 
-                Color::Rgba {r, g, b, a: *a}
-            },
+            //     Color::Rgba {r, g, b, a: *a}
+            // },
         }
     }
 
@@ -108,9 +108,9 @@ impl Color {
 
                 Color::Hsva {h: *h, s: sv, v, a: *a}
             },
-            Color::Hsia {h, s, i, a} => {
-                todo!();
-            }
+            // Color::Hsia {h, s, i, a} => {
+            //     todo!();
+            // }
         }
     }
 
@@ -148,26 +148,26 @@ impl Color {
                 Color::Hsla {h: *h, s: sl, l, a: *a}
             },
             Color::Hsla {..} => *self,
-            Color::Hsia {h, s, i, a} => {
-                todo!();
-            },
+            // Color::Hsia {h, s, i, a} => {
+            //     todo!();
+            // },
         }
     }
 
-    pub fn hsia(&self) -> Self {
-        match self {
-            Color::Rgba {r, g, b, a} => {
-                todo!();
-            },
-            Color::Hsva {h, s, v, a} => {
-                todo!();
-            },
-            Color::Hsla {h, s, l, a} => {
-                todo!();
-            },
-            Color::Hsia {..} => *self,
-        }
-    }
+    // pub fn hsia(&self) -> Self {
+    //     match self {
+    //         Color::Rgba {r, g, b, a} => {
+    //             todo!();
+    //         },
+    //         Color::Hsva {h, s, v, a} => {
+    //             todo!();
+    //         },
+    //         Color::Hsla {h, s, l, a} => {
+    //             todo!();
+    //         },
+    //         Color::Hsia {..} => *self,
+    //     }
+    // }
 }
 
 #[cfg(test)]
