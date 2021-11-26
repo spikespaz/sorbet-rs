@@ -13,3 +13,25 @@ categories = ["graphics", "gui", "rendering", "localization"]
 publish = false
 
 [dependencies]
+# for cross-platform windowing
+winit = { version = "^0.25.0", optional = true }
+# for cross-platform graphics api
+wgpu = "^0.11.0"
+# for font rasterization and layout
+font-kit = { version = "^0.10.1", optional = true }
+fontdue = { version = "^0.6.2", optional = true }
+# for font shaping
+harfbuzz_rs = { version = "^2.0.1", optional = true }
+# for GUI templating and config files
+ron = "^0.7.0"
+
+[dev-dependencies]
+# requirements by wgpu crate
+image = "^0.23.14"
+cgmath = "^0.18.0"
+env_logger = "^0.9.0"
+log = "^0.4.14"
+pollster = "^0.2.4"
+
+[features]
+default = ["winit", "font-kit"]
