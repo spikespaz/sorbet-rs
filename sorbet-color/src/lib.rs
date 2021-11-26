@@ -78,7 +78,24 @@ impl Color {
     pub fn hsva(&self) -> Self {
         match self {
             Color::Rgba {r, g, b, a} => {
-                todo!();
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
+                let xmax = r.max(g.max(*b));
+                let xmin = r.min(g.min(*b));
+                let c = xmax - xmin;
+                let mut h = match () {
+                    _ if c == 0.0 => 0.0,
+                    _ if xmax == *r => 60.0 * ((g - b) / c),
+                    _ if xmax == *g => 60.0 * ((b - r) / c + 2.0),
+                    _ if xmax == *b => 60.0 * ((r - g) / c + 4.0),
+                    _ => panic!(),
+                };
+                if h < 0.0 { h += 360.0 };
+                let s = match () {
+                    _ if xmax == 0.0 => 0.0,
+                    _ => c / xmax,
+                };
+
+                Color::Hsva {h, s, v: xmax, a: *a}
             },
             Color::Hsva {..} => *self,
             Color::Hsla {h, s, l, a} => {
@@ -100,7 +117,25 @@ impl Color {
     pub fn hsla(&self) -> Self {
         match self {
             Color::Rgba {r, g, b, a} => {
-                Color::Hsla {h: 0.0, s: 0.0, l: 0.0, a: *a}
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
+                let xmax = r.max(g.max(*b));
+                let xmin = r.min(g.min(*b));
+                let c = xmax - xmin;
+                let mut h = match () {
+                    _ if c == 0.0 => 0.0,
+                    _ if xmax == *r => 60.0 * ((g - b) / c),
+                    _ if xmax == *g => 60.0 * ((b - r) / c + 2.0),
+                    _ if xmax == *b => 60.0 * ((r - g) / c + 4.0),
+                    _ => panic!(),
+                };
+                if h < 0.0 { h += 360.0 };
+                let l = (xmax + xmin) / 2.0;
+                let s = match () {
+                    _ if l == 0.0 || l == 1.0 => 0.0,
+                    _ => c / (1.0 - (2.0 * xmax - c - 1.0).abs()),
+                };
+
+                Color::Hsla {h, s, l, a: *a}
             },
             Color::Hsva {h, s, v, a} => {
                 // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_HSL
