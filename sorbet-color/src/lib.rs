@@ -82,7 +82,14 @@ impl Color {
             },
             Color::Hsva {..} => *self,
             Color::Hsla {h, s, l, a} => {
-                Color::Hsva {h: 0.0, s: 0.0, v: 0.0, a: *a}
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_HSV
+                let v = l + s * l.min(1.0 - l);
+                let s1 = match () {
+                    _ if v == 0.0 => 0.0,
+                    _ => 2.0 * (1.0 - l / v),
+                };
+
+                Color::Hsva {h: *h, s: s1, v, a: *a}
             },
             Color::Hsia {h, s, i, a} => {
                 Color::Hsva {h: 0.0, s: 0.0, v: 0.0, a: *a}
@@ -96,7 +103,14 @@ impl Color {
                 Color::Hsla {h: 0.0, s: 0.0, l: 0.0, a: *a}
             },
             Color::Hsva {h, s, v, a} => {
-                Color::Hsla {h: 0.0, s: 0.0, l: 0.0, a: *a}
+                // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_HSL
+                let l = v * (1.0 - (s / 2.0));
+                let s1 = match () {
+                    _ if l == 0.0 || l == 1.0 => 0.0,
+                    _ => 2.0 * (1.0 - l / v),
+                };
+
+                Color::Hsla {h: *h, s: s1, l, a: *a}
             },
             Color::Hsla {..} => *self,
             Color::Hsia {h, s, i, a} => {
