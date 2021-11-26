@@ -84,12 +84,12 @@ impl Color {
             Color::Hsla {h, s, l, a} => {
                 // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_HSV
                 let v = l + s * l.min(1.0 - l);
-                let s1 = match () {
+                let sv = match () {
                     _ if v == 0.0 => 0.0,
                     _ => 2.0 * (1.0 - l / v),
                 };
 
-                Color::Hsva {h: *h, s: s1, v, a: *a}
+                Color::Hsva {h: *h, s: sv, v, a: *a}
             },
             Color::Hsia {h, s, i, a} => {
                 todo!();
@@ -105,12 +105,12 @@ impl Color {
             Color::Hsva {h, s, v, a} => {
                 // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_HSL
                 let l = v * (1.0 - (s / 2.0));
-                let s1 = match () {
+                let sl = match () {
                     _ if l == 0.0 || l == 1.0 => 0.0,
                     _ => 2.0 * (1.0 - l / v),
                 };
 
-                Color::Hsla {h: *h, s: s1, l, a: *a}
+                Color::Hsla {h: *h, s: sl, l, a: *a}
             },
             Color::Hsla {..} => *self,
             Color::Hsia {h, s, i, a} => {
