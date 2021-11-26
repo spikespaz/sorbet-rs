@@ -78,7 +78,7 @@ impl Color {
     pub fn hsva(&self) -> Self {
         match self {
             Color::Rgba {r, g, b, a} => {
-                Color::Hsva {h: 0.0, s: 0.0, v: 0.0, a: *a}
+                todo!();
             },
             Color::Hsva {..} => *self,
             Color::Hsla {h, s, l, a} => {
@@ -92,7 +92,7 @@ impl Color {
                 Color::Hsva {h: *h, s: s1, v, a: *a}
             },
             Color::Hsia {h, s, i, a} => {
-                Color::Hsva {h: 0.0, s: 0.0, v: 0.0, a: *a}
+                todo!();
             }
         }
     }
@@ -114,22 +114,21 @@ impl Color {
             },
             Color::Hsla {..} => *self,
             Color::Hsia {h, s, i, a} => {
-                Color::Hsla {h: 0.0, s: 0.0, l: 0.0, a: *a}
+                todo!();
             },
         }
     }
 
     pub fn hsia(&self) -> Self {
-        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB
         match self {
             Color::Rgba {r, g, b, a} => {
-                Color::Hsia {h: 0.0, s: 0.0, i: 0.0, a: *a}
+                todo!();
             },
             Color::Hsva {h, s, v, a} => {
-                Color::Hsia {h: 0.0, s: 0.0, i: 0.0, a: *a}
+                todo!();
             },
             Color::Hsla {h, s, l, a} => {
-                Color::Hsia {h: 0.0, s: 0.0, i: 0.0, a: *a}
+                todo!();
             },
             Color::Hsia {..} => *self,
         }
