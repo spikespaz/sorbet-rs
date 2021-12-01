@@ -23,6 +23,33 @@ pub enum Color {
 }
 
 impl Color {
+    pub fn new_rgba(rgba: &[f32; 4]) -> Self {
+        Self::Rgba {
+            r: rgba[0],
+            g: rgba[1],
+            b: rgba[2],
+            a: rgba[3],
+        }
+    }
+
+    pub fn new_hsva(hsva: &[f32; 4]) -> Self {
+        Self::Hsva {
+            h: hsva[0],
+            s: hsva[1],
+            v: hsva[2],
+            a: hsva[3],
+        }
+    }
+
+    pub fn new_hsla(hsla: &[f32; 4]) -> Self {
+        Self::Hsla {
+            h: hsla[0],
+            s: hsla[1],
+            l: hsla[2],
+            a: hsla[3],
+        }
+    }
+
     fn neighboring(c: f32, x: f32, h1: f32) -> (f32, f32, f32) {
         return match () {
             _ if 0.0 <= h1 && h1 < 1.0 => (c, x, 0.0),
