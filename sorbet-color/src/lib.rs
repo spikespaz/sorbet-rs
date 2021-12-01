@@ -35,7 +35,7 @@ impl Color {
         };
     }
 
-    pub fn rgba(&self) -> Self {
+    pub fn to_rgba(&self) -> Self {
         match self {
             Color::Rgba {..} => *self,
             Color::Hsva {h, s, v, a} => {
@@ -75,7 +75,7 @@ impl Color {
         }
     }
 
-    pub fn hsva(&self) -> Self {
+    pub fn to_hsva(&self) -> Self {
         match self {
             Color::Rgba {r, g, b, a} => {
                 // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
@@ -114,7 +114,7 @@ impl Color {
         }
     }
 
-    pub fn hsla(&self) -> Self {
+    pub fn to_hsla(&self) -> Self {
         match self {
             Color::Rgba {r, g, b, a} => {
                 // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
