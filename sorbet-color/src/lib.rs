@@ -16,14 +16,14 @@
 
 #[derive(Copy, Clone, Debug)]
 pub enum Color {
-    Rgba {r: f32, g: f32, b: f32, a: f32},
-    Hsva {h: f32, s: f32, v: f32, a: f32},
-    Hsla {h: f32, s: f32, l: f32, a: f32},
-    // Hsia {h: f32, s: f32, i: f32, a: f32},
+    Rgba {r: f64, g: f64, b: f64, a: f64},
+    Hsva {h: f64, s: f64, v: f64, a: f64},
+    Hsla {h: f64, s: f64, l: f64, a: f64},
+    // Hsia {h: f64, s: f64, i: f64, a: f64},
 }
 
 impl Color {
-    pub fn new_rgba(rgba: &[f32; 4]) -> Self {
+    pub fn new_rgba(rgba: &[f64; 4]) -> Self {
         Self::Rgba {
             r: rgba[0],
             g: rgba[1],
@@ -32,7 +32,7 @@ impl Color {
         }
     }
 
-    pub fn new_hsva(hsva: &[f32; 4]) -> Self {
+    pub fn new_hsva(hsva: &[f64; 4]) -> Self {
         Self::Hsva {
             h: hsva[0],
             s: hsva[1],
@@ -41,7 +41,7 @@ impl Color {
         }
     }
 
-    pub fn new_hsla(hsla: &[f32; 4]) -> Self {
+    pub fn new_hsla(hsla: &[f64; 4]) -> Self {
         Self::Hsla {
             h: hsla[0],
             s: hsla[1],
@@ -50,8 +50,8 @@ impl Color {
         }
     }
 
-    fn neighboring(c: f32, x: f32, h1: f32) -> (f32, f32, f32) {
-        return match () {
+    fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
+        match () {
             _ if 0.0 <= h1 && h1 < 1.0 => (c, x, 0.0),
             _ if 1.0 <= h1 && h1 < 2.0 => (x, c, 0.0),
             _ if 2.0 <= h1 && h1 < 3.0 => (0.0, c, x),
@@ -59,7 +59,7 @@ impl Color {
             _ if 4.0 <= h1 && h1 < 5.0 => (x, 0.0, c),
             _ if 5.0 <= h1 && h1 < 6.0 => (c, 0.0, x),
             _ => (0.0, 0.0, 0.0),
-        };
+        }
     }
 
     pub fn to_rgba(&self) -> Self {
