@@ -1,6 +1,17 @@
-[workspace]
-resolver = "2"
-members = [
-    "sorbet",
-    "sorbet-color",
-]
+[package]
+name = "sorbet-color"
+version = "0.1.0"
+authors = ["Jacob Birkett <jacob@birkett.dev>"]
+edition = "2021"
+description = "A simple library providing traits and structures for color manipulation."
+# documentation = "https://birkett.dev/docs/sorbet-rs"
+# homepage = "https://birkett.dev/projects/sorbet-rs"
+repository = "https://github.com/spikespaz/sorbet-rs"
+license = "Apache-2.0"
+# keywords = ["ui", "gui", "graphics", "widgets", "interface"]
+# categories = ["graphics", "gui", "rendering", "localization"]
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
