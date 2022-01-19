@@ -65,35 +65,47 @@ impl Color {
         }
     }
 
-    // pub fn to_rgba(&self) -> Self {
-    //     match self {
-    //         Color::Rgba { .. } => *self,
-    //         Color::Hsva { h, s, v, a } => {
-    //         }
-    //         Color::Hsla { h, s, l, a } => {
-    //         }
-    //     }
-    // }
+    pub fn to_rgba(&self) -> Self {
+        match self {
+            Color::Rgba { .. } => *self,
+            Color::Hsva { inner, alpha } => Color::Rgba {
+                inner: inner.to_rgb(),
+                alpha: *alpha,
+            },
+            Color::Hsla { inner, alpha } => Color::Rgba {
+                inner: inner.to_rgb(),
+                alpha: *alpha,
+            },
+        }
+    }
 
-    // pub fn to_hsva(&self) -> Self {
-    //     match self {
-    //         Color::Rgba { r, g, b, a } => {
-    //         }
-    //         Color::Hsva { .. } => *self,
-    //         Color::Hsla { h, s, l, a } => {
-    //         }
-    //     }
-    // }
+    pub fn to_hsva(&self) -> Self {
+        match self {
+            Color::Rgba { inner, alpha } => Color::Hsva {
+                inner: inner.to_hsv(),
+                alpha: *alpha,
+            },
+            Color::Hsva { .. } => *self,
+            Color::Hsla { inner, alpha } => Color::Hsva {
+                inner: inner.to_hsv(),
+                alpha: *alpha,
+            },
+        }
+    }
 
-    // pub fn to_hsla(&self) -> Self {
-    //     match self {
-    //         Color::Rgba { r, g, b, a } => {
-    //         }
-    //         Color::Hsva { h, s, v, a } => {
-    //         }
-    //         Color::Hsla { .. } => *self,
-    //     }
-    // }
+    pub fn to_hsla(&self) -> Self {
+        match self {
+            Color::Rgba { inner, alpha } => Color::Hsla {
+                inner: inner.to_hsl(),
+                alpha: *alpha,
+            },
+            Color::Hsva { inner, alpha } => Color::Hsla {
+                inner: inner.to_hsl(),
+                alpha: *alpha,
+            },
+            Color::Hsla { .. } => *self,
+        }
+    }
 }
 
 #[cfg(test)]
