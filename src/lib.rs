@@ -39,6 +39,32 @@ impl Color {
         }
     }
 
+    pub fn new_hsva<I: IntoIterator<Item = f64>>(color: I) -> Self {
+        let mut color = color.into_iter();
+
+        Self::Hsva {
+            inner: Hsv {
+                h: color.next().expect("could not find H value"),
+                s: color.next().expect("could not find S value"),
+                v: color.next().expect("could not find V value"),
+            },
+            alpha: color.next(),
+        }
+    }
+
+    pub fn new_hsla<I: IntoIterator<Item = f64>>(color: I) -> Self {
+        let mut color = color.into_iter();
+
+        Self::Hsla {
+            inner: Hsl {
+                h: color.next().expect("could not find H value"),
+                s: color.next().expect("could not find S value"),
+                l: color.next().expect("could not find L value"),
+            },
+            alpha: color.next(),
+        }
+    }
+
     // fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
     //     match () {
     //         _ if 0.0 <= h1 && h1 < 1.0 => (c, x, 0.0),
