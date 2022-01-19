@@ -52,36 +52,6 @@ impl Color {
         }
     }
 
-    pub fn to_hex(&self) -> String {
-        let [r, g, b, a] = self.to_rgba_u8();
-
-        match match self {
-            Self::Rgba { alpha, .. } => alpha,
-            Self::Hsva { alpha, .. } => alpha,
-            Self::Hsla { alpha, .. } => alpha,
-        } {
-            Some(_) => format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a),
-            None => format!("#{:02X}{:02X}{:02X}", r, g, b),
-        }
-    }
-
-    pub fn to_rgba_u8(&self) -> [u8; 4] {
-        match self {
-            Self::Rgba { inner, alpha } => {
-                let r = (inner.r * 255.0).round() as u8;
-                let g = (inner.g * 255.0).round() as u8;
-                let b = (inner.b * 255.0).round() as u8;
-                let a = alpha.map(|a| (a * 255.0).round() as u8);
-
-                match a {
-                    Some(a) => [r, g, b, a],
-                    None => [r, g, b, 255],
-                }
-            }
-            _ => self.to_rgba().to_rgba_u8(),
-        }
-    }
-
     pub fn new_rgba<I: IntoIterator<Item = f64>>(color: I) -> Self {
         let mut color = color.into_iter();
 
@@ -118,6 +88,40 @@ impl Color {
                 l: color.next().expect("could not find L value"),
             },
             alpha: color.next(),
+        }
+    }
+
+    pub fn alpha(&self) -> Option<f64> {
+        match self {
+            Self::Rgba { alpha, .. } => *alpha,
+            Self::Hsva { alpha, .. } => *alpha,
+            Self::Hsla { alpha, .. } => *alpha,
+        }
+    }
+
+    pub fn to_hex(&self) -> String {
+        let [r, g, b, a] = self.to_rgba_u8();
+
+        match self.alpha() {
+            Some(_) => format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a),
+            None => format!("#{:02X}{:02X}{:02X}", r, g, b),
+        }
+    }
+
+    pub fn to_rgba_u8(&self) -> [u8; 4] {
+        match self {
+            Self::Rgba { inner, alpha } => {
+                let r = (inner.r * 255.0).round() as u8;
+                let g = (inner.g * 255.0).round() as u8;
+                let b = (inner.b * 255.0).round() as u8;
+                let a = alpha.map(|a| (a * 255.0).round() as u8);
+
+                match a {
+                    Some(a) => [r, g, b, a],
+                    None => [r, g, b, 255],
+                }
+            }
+            _ => self.to_rgba().to_rgba_u8(),
         }
     }
 
