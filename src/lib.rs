@@ -178,9 +178,11 @@ mod tests {
     });
 
     #[test]
-    fn test_default_constructor() {
+    fn test_to_from_hsv() {
         for color in TEST_COLORS.iter() {
-            Color::new(color);
+            let mutated = &Color::new(color).to_hsva().to_hex();
+
+            assert_eq!(mutated, color);
         }
     }
 
@@ -189,11 +191,7 @@ mod tests {
         for color in TEST_COLORS.iter() {
             let mutated = &Color::new(color).to_hsla().to_hex();
 
-            if mutated == color {
-                println!("{} == {}", mutated, color);
-            } else {
-                assert_eq!(mutated, color);
-            }
+            assert_eq!(mutated, color);
         }
     }
 }
