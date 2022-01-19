@@ -14,7 +14,9 @@
     limitations under the License.
 */
 
-use crate::types::*;
+pub mod types;
+
+use types::*;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Color {
@@ -25,15 +27,15 @@ pub enum Color {
 
 impl Color {
     pub fn new_rgba<I: IntoIterator<Item = f64>>(color: I) -> Self {
-        let color = color.into_iter();
+        let mut color = color.into_iter();
 
         Self::Rgba {
             inner: Rgb {
                 r: color.next().expect("could not find R value"),
                 g: color.next().expect("could not find G value"),
-                b: color.next().expect("could not find B value")
+                b: color.next().expect("could not find B value"),
             },
-            alpha = color.next(),
+            alpha: color.next(),
         }
     }
 
