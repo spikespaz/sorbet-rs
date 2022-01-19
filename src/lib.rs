@@ -55,14 +55,14 @@ impl Color {
     pub fn to_hex(&self) -> String {
         match self {
             Self::Rgba { inner, alpha } => {
-                let r = (inner.r * 255.0) as i16;
-                let g = (inner.g * 255.0) as i16;
-                let b = (inner.b * 255.0) as i16;
-                let a = alpha.map(|a| (a * 255.0) as i16);
+                let r = (inner.r * 255.0).round() as i16;
+                let g = (inner.g * 255.0).round() as i16;
+                let b = (inner.b * 255.0).round() as i16;
+                let a = alpha.map(|a| (a * 255.0).round() as i16);
 
                 match a {
-                    Some(a) => format!("#{:X}{:X}{:X}{:X}", r, g, b, a),
-                    None => format!("#{:X}{:X}{:X}", r, g, b),
+                    Some(a) => format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a),
+                    None => format!("#{:02X}{:02X}{:02X}", r, g, b),
                 }
             }
             _ => self.to_rgba().to_hex(),
