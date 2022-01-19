@@ -26,6 +26,49 @@ pub enum Color {
 }
 
 impl Color {
+    pub fn new(color: &str) -> Self {
+        let color = match color.strip_prefix('#') {
+            Some(string) => string,
+            None => color,
+        };
+
+        let r = i16::from_str_radix(&color[0..2], 16).expect("invalid hexadecimal string");
+        let g = i16::from_str_radix(&color[2..4], 16).expect("invalid hexadecimal string");
+        let b = i16::from_str_radix(&color[4..6], 16).expect("invalid hexadecimal string");
+
+        let alpha = if color.len() == 8 {
+            Some(i16::from_str_radix(&color[6..8], 16).expect("invalid hexadecimal string"))
+        } else {
+            None
+        };
+
+        Self::Rgba {
+            inner: Rgb {
+                r: r as f64 / 255.0,
+                g: g as f64 / 255.0,
+                b: b as f64 / 255.0,
+            },
+            alpha: alpha.map(|a| a as f64 / 255.0),
+        }
+    }
+
+    pub fn to_hex(&self) -> String {
+        match self {
+            Self::Rgba { inner, alpha } => {
+                let r = (inner.r * 255.0) as i16;
+                let g = (inner.g * 255.0) as i16;
+                let b = (inner.b * 255.0) as i16;
+                let a = alpha.map(|a| (a * 255.0) as i16);
+
+                match a {
+                    Some(a) => format!("#{:X}{:X}{:X}{:X}", r, g, b, a),
+                    None => format!("#{:X}{:X}{:X}", r, g, b),
+                }
+            }
+            _ => self.to_rgba().to_hex(),
+        }
+    }
+
     pub fn new_rgba<I: IntoIterator<Item = f64>>(color: I) -> Self {
         let mut color = color.into_iter();
 
