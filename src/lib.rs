@@ -53,6 +53,19 @@ impl Color {
     }
 
     pub fn to_hex(&self) -> String {
+        let [r, g, b, a] = self.to_rgba_i16();
+
+        match match self {
+            Self::Rgba { alpha, .. } => alpha,
+            Self::Hsva { alpha, .. } => alpha,
+            Self::Hsla { alpha, .. } => alpha,
+        } {
+            Some(_) => format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a),
+            None => format!("#{:02X}{:02X}{:02X}", r, g, b),
+        }
+    }
+
+    pub fn to_rgba_i16(&self) -> [i16; 4] {
         match self {
             Self::Rgba { inner, alpha } => {
                 let r = (inner.r * 255.0).round() as i16;
@@ -61,11 +74,11 @@ impl Color {
                 let a = alpha.map(|a| (a * 255.0).round() as i16);
 
                 match a {
-                    Some(a) => format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a),
-                    None => format!("#{:02X}{:02X}{:02X}", r, g, b),
+                    Some(a) => [r, g, b, a],
+                    None => [r, g, b, 255],
                 }
             }
-            _ => self.to_rgba().to_hex(),
+            _ => self.to_rgba().to_rgba_i16(),
         }
     }
 
