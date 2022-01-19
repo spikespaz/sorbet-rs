@@ -32,12 +32,12 @@ impl Color {
             None => color,
         };
 
-        let r = i16::from_str_radix(&color[0..2], 16).expect("invalid hexadecimal string");
-        let g = i16::from_str_radix(&color[2..4], 16).expect("invalid hexadecimal string");
-        let b = i16::from_str_radix(&color[4..6], 16).expect("invalid hexadecimal string");
+        let r = u8::from_str_radix(&color[0..2], 16).expect("invalid hexadecimal string");
+        let g = u8::from_str_radix(&color[2..4], 16).expect("invalid hexadecimal string");
+        let b = u8::from_str_radix(&color[4..6], 16).expect("invalid hexadecimal string");
 
         let alpha = if color.len() == 8 {
-            Some(i16::from_str_radix(&color[6..8], 16).expect("invalid hexadecimal string"))
+            Some(u8::from_str_radix(&color[6..8], 16).expect("invalid hexadecimal string"))
         } else {
             None
         };
@@ -53,7 +53,7 @@ impl Color {
     }
 
     pub fn to_hex(&self) -> String {
-        let [r, g, b, a] = self.to_rgba_i16();
+        let [r, g, b, a] = self.to_rgba_u8();
 
         match match self {
             Self::Rgba { alpha, .. } => alpha,
@@ -65,20 +65,20 @@ impl Color {
         }
     }
 
-    pub fn to_rgba_i16(&self) -> [i16; 4] {
+    pub fn to_rgba_u8(&self) -> [u8; 4] {
         match self {
             Self::Rgba { inner, alpha } => {
-                let r = (inner.r * 255.0).round() as i16;
-                let g = (inner.g * 255.0).round() as i16;
-                let b = (inner.b * 255.0).round() as i16;
-                let a = alpha.map(|a| (a * 255.0).round() as i16);
+                let r = (inner.r * 255.0).round() as u8;
+                let g = (inner.g * 255.0).round() as u8;
+                let b = (inner.b * 255.0).round() as u8;
+                let a = alpha.map(|a| (a * 255.0).round() as u8);
 
                 match a {
                     Some(a) => [r, g, b, a],
                     None => [r, g, b, 255],
                 }
             }
-            _ => self.to_rgba().to_rgba_i16(),
+            _ => self.to_rgba().to_rgba_u8(),
         }
     }
 
