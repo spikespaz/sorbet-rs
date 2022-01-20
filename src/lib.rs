@@ -16,7 +16,35 @@
 
 pub mod types;
 
+use std::{fmt, hash};
+
 pub use types::*;
+
+pub trait Color:
+    Copy
+    + Clone
+    + fmt::Debug
+    + PartialEq
+    + Eq
+    + hash::Hash
+    + From<Rgb>
+    + From<Rgba>
+    + From<Hsv>
+    + From<Hsva>
+    + From<Hsl>
+    + From<Hsla>
+{
+    fn new(color: &str) -> Self {
+        Self::from(Rgba::from(color))
+    }
+}
+
+impl Color for Rgb {}
+impl Color for Rgba {}
+impl Color for Hsv {}
+impl Color for Hsva {}
+impl Color for Hsl {}
+impl Color for Hsla {}
 
 // #[cfg(test)]
 // mod tests {
