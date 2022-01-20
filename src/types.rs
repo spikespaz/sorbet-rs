@@ -32,27 +32,7 @@ pub trait Color:
     + From<Hsla>
 {
     fn new(color: &str) -> Self {
-        let color = match color.strip_prefix('#') {
-            Some(string) => string,
-            None => color,
-        };
-
-        let r = u8::from_str_radix(&color[0..2], 16).expect("invalid hexadecimal string");
-        let g = u8::from_str_radix(&color[2..4], 16).expect("invalid hexadecimal string");
-        let b = u8::from_str_radix(&color[4..6], 16).expect("invalid hexadecimal string");
-
-        let alpha = if color.len() == 8 {
-            u8::from_str_radix(&color[6..8], 16).expect("invalid hexadecimal string")
-        } else {
-            1
-        };
-
-        Self::from(Rgba {
-            r: r as f64 / 255.0,
-            g: g as f64 / 255.0,
-            b: b as f64 / 255.0,
-            alpha: alpha as f64 / 255.0,
-        })
+        Self::from(Rgba::from(color))
     }
 }
 
@@ -116,7 +96,7 @@ impl Color for Hsl {}
 impl Color for Hsla {}
 
 //
-// impl hash::Hash for *
+// Implement Hash for all Color types
 //
 
 #[allow(clippy::derive_hash_xor_eq)]
@@ -181,41 +161,42 @@ impl hash::Hash for Hsla {
 //
 
 impl Rgb {
-    pub fn to_u8(&self) -> [u8; 3] {
-        let r = (&self.r * 255.0).round() as u8;
-        let g = (&self.g * 255.0).round() as u8;
-        let b = (&self.b * 255.0).round() as u8;
-
-        [r, g, b]
-    }
-
     pub fn to_hex(&self) -> String {
-        let [r, g, b] = self.to_u8();
-
+        let [r, g, b]: [u8; 3] = (*self).into();
         format!("#{:02X}{:02X}{:02X}", r, g, b)
     }
 }
 
 impl Rgba {
-    pub fn to_u8(&self) -> [u8; 4] {
-        let r = (&self.r * 255.0).round() as u8;
-        let g = (&self.g * 255.0).round() as u8;
-        let b = (&self.b * 255.0).round() as u8;
-        let alpha = (&self.alpha * 255.0).round() as u8;
-
-        [r, g, b, alpha]
-    }
-
     pub fn to_hex(&self) -> String {
-        let [r, g, b, alpha] = self.to_u8();
-
+        let [r, g, b, alpha]: [u8; 4] = (*self).into();
         format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, alpha)
     }
 }
 
 //
-// impl From<*> for Rgb
+// Implement to/from primitives for Rgb
 //
+
+impl From<[u8; 3]> for Rgb {
+    fn from(array: [u8; 3]) -> Self {
+        Self {
+            r: array[0] as f64 / 255.0,
+            g: array[1] as f64 / 255.0,
+            b: array[2] as f64 / 255.0,
+        }
+    }
+}
+
+impl From<Rgb> for [u8; 3] {
+    fn from(color: Rgb) -> Self {
+        [
+            (color.r * 255.0).round() as u8,
+            (color.g * 255.0).round() as u8,
+            (color.b * 255.0).round() as u8,
+        ]
+    }
+}
 
 impl From<[f64; 3]> for Rgb {
     fn from(array: [f64; 3]) -> Self {
@@ -226,6 +207,32 @@ impl From<[f64; 3]> for Rgb {
         }
     }
 }
+
+impl From<Rgb> for [f64; 3] {
+    fn from(color: Rgb) -> Self {
+        [color.r, color.g, color.b]
+    }
+}
+
+impl From<&str> for Rgb {
+    fn from(string: &str) -> Self {
+        let string = string.strip_prefix('#').unwrap_or(string);
+
+        let r = u8::from_str_radix(&string[0..2], 16).expect("invalid hexadecimal string");
+        let g = u8::from_str_radix(&string[2..4], 16).expect("invalid hexadecimal string");
+        let b = u8::from_str_radix(&string[4..6], 16).expect("invalid hexadecimal string");
+
+        Self {
+            r: r as f64 / 255.0,
+            g: g as f64 / 255.0,
+            b: b as f64 / 255.0,
+        }
+    }
+}
+
+//
+// Implement From for all other Color types for Rgb
+//
 
 impl From<Hsv> for Rgb {
     fn from(other: Hsv) -> Self {
@@ -278,8 +285,30 @@ impl From<Hsla> for Rgb {
 }
 
 //
-// impl From<*> for Rgba
+// Implement to/from primitives for Rgba
 //
+
+impl From<[u8; 4]> for Rgba {
+    fn from(array: [u8; 4]) -> Self {
+        Self {
+            r: array[0] as f64 / 255.0,
+            g: array[1] as f64 / 255.0,
+            b: array[2] as f64 / 255.0,
+            alpha: array[3] as f64 / 255.0,
+        }
+    }
+}
+
+impl From<Rgba> for [u8; 4] {
+    fn from(color: Rgba) -> Self {
+        [
+            (color.r * 255.0).round() as u8,
+            (color.g * 255.0).round() as u8,
+            (color.b * 255.0).round() as u8,
+            (color.alpha * 255.0).round() as u8,
+        ]
+    }
+}
 
 impl From<[f64; 4]> for Rgba {
     fn from(array: [f64; 4]) -> Self {
@@ -291,6 +320,32 @@ impl From<[f64; 4]> for Rgba {
         }
     }
 }
+
+impl From<Rgba> for [f64; 4] {
+    fn from(color: Rgba) -> Self {
+        [color.r, color.g, color.b, color.alpha]
+    }
+}
+
+impl From<&str> for Rgba {
+    fn from(string: &str) -> Self {
+        let string = string.strip_prefix('#').unwrap_or(string);
+
+        let Rgb { r, g, b } = Rgb::from(string);
+        let alpha = u8::from_str_radix(&string[6..8], 16).expect("invalid hexadecimal string");
+
+        Self {
+            r: r as f64 / 255.0,
+            g: g as f64 / 255.0,
+            b: b as f64 / 255.0,
+            alpha: alpha as f64 / 255.0,
+        }
+    }
+}
+
+//
+// Implement From for all other Color types for Rgba
+//
 
 impl From<Rgb> for Rgba {
     fn from(other: Rgb) -> Self {
@@ -342,7 +397,7 @@ impl From<Hsla> for Rgba {
 }
 
 //
-// impl From<*> for Hsv
+// Implement From for all other Color types for Hsv
 //
 
 impl From<[f64; 3]> for Hsv {
@@ -420,7 +475,7 @@ impl From<Hsla> for Hsv {
 }
 
 //
-// impl From<*> for Hsva
+// Implement From for all other Color types for Hsva
 //
 
 impl From<[f64; 4]> for Hsva {
@@ -484,7 +539,7 @@ impl From<Hsla> for Hsva {
 }
 
 //
-// impl From<*> for Hsl
+// Implement From for all other Color types for Hsl
 //
 
 impl From<[f64; 3]> for Hsl {
@@ -562,7 +617,7 @@ impl From<Hsva> for Hsl {
     }
 }
 
-// impl From<*> for Hsla
+// Implement From for all other Color types for Hsla
 
 impl From<[f64; 4]> for Hsla {
     fn from(array: [f64; 4]) -> Self {
@@ -640,10 +695,13 @@ fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
     }
 }
 
-// #[cfg(test)]
-// mod test {
-//     #[test]
-//     fn test_rgb_from() {
-//         Rgb::from(Rgb{0.1, 0.2,})
-//     }
-// }
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_rgb_from() {
+        let color = Rgb::from([255, 255, 255]);
+        let u8_rgb: [u8; 3] = color.into();
+    }
+}
