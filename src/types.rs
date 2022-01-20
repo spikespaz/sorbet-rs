@@ -115,6 +115,10 @@ impl Color for Hsva {}
 impl Color for Hsl {}
 impl Color for Hsla {}
 
+//
+// impl hash::Hash for *
+//
+
 #[allow(clippy::derive_hash_xor_eq)]
 impl hash::Hash for Rgb {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
@@ -169,6 +173,43 @@ impl hash::Hash for Hsla {
         self.s.to_bits().hash(state);
         self.l.to_bits().hash(state);
         self.alpha.to_bits().hash(state);
+    }
+}
+
+//
+// Special methods for certain types
+//
+
+impl Rgb {
+    pub fn to_u8(&self) -> [u8; 3] {
+        let r = (&self.r * 255.0).round() as u8;
+        let g = (&self.g * 255.0).round() as u8;
+        let b = (&self.b * 255.0).round() as u8;
+
+        [r, g, b]
+    }
+
+    pub fn to_hex(&self) -> String {
+        let [r, g, b] = self.to_u8();
+
+        format!("#{:02X}{:02X}{:02X}", r, g, b)
+    }
+}
+
+impl Rgba {
+    pub fn to_u8(&self) -> [u8; 4] {
+        let r = (&self.r * 255.0).round() as u8;
+        let g = (&self.g * 255.0).round() as u8;
+        let b = (&self.b * 255.0).round() as u8;
+        let alpha = (&self.alpha * 255.0).round() as u8;
+
+        [r, g, b, alpha]
+    }
+
+    pub fn to_hex(&self) -> String {
+        let [r, g, b, alpha] = self.to_u8();
+
+        format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, alpha)
     }
 }
 
@@ -584,7 +625,7 @@ impl From<Hsva> for Hsla {
 }
 
 //
-//
+// Private use free-functions
 //
 
 fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
