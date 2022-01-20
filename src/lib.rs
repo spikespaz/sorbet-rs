@@ -16,6 +16,8 @@
 
 pub mod types;
 
+pub use types::ColorType;
+
 use std::{fmt, hash};
 use types::*;
 

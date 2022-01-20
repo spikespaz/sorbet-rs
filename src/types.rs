@@ -16,6 +16,10 @@
 
 use std::hash;
 
+pub trait ColorType {
+    fn to_array(&self) -> [f64; 3];
+}
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgb {
     pub r: f64,
@@ -172,6 +176,24 @@ impl Hsl {
             s: sv,
             v,
         }
+    }
+}
+
+impl ColorType for Rgb {
+    fn to_array(&self) -> [f64; 3] {
+        [self.r, self.g, self.b]
+    }
+}
+
+impl ColorType for Hsv {
+    fn to_array(&self) -> [f64; 3] {
+        [self.h, self.s, self.v]
+    }
+}
+
+impl ColorType for Hsl {
+    fn to_array(&self) -> [f64; 3] {
+        [self.h, self.s, self.l]
     }
 }
 
