@@ -153,6 +153,16 @@ impl hash::Hash for Hsla {
 // impl From<*> for Rgb
 //
 
+impl From<[f64; 3]> for Rgb {
+    fn from(array: [f64; 3]) -> Self {
+        Self {
+            r: array[0],
+            g: array[1],
+            b: array[2],
+        }
+    }
+}
+
 impl From<Hsv> for Rgb {
     fn from(other: Hsv) -> Self {
         //https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
@@ -207,6 +217,17 @@ impl From<Hsla> for Rgb {
 // impl From<*> for Rgba
 //
 
+impl From<[f64; 4]> for Rgba {
+    fn from(array: [f64; 4]) -> Self {
+        Self {
+            r: array[0],
+            g: array[1],
+            b: array[2],
+            alpha: array[3],
+        }
+    }
+}
+
 impl From<Rgb> for Rgba {
     fn from(other: Rgb) -> Self {
         Self {
@@ -259,6 +280,16 @@ impl From<Hsla> for Rgba {
 //
 // impl From<*> for Hsv
 //
+
+impl From<[f64; 3]> for Hsv {
+    fn from(array: [f64; 3]) -> Self {
+        Self {
+            h: array[0],
+            s: array[1],
+            v: array[2],
+        }
+    }
+}
 
 impl From<Rgb> for Hsv {
     fn from(other: Rgb) -> Self {
@@ -328,6 +359,17 @@ impl From<Hsla> for Hsv {
 // impl From<*> for Hsva
 //
 
+impl From<[f64; 4]> for Hsva {
+    fn from(array: [f64; 4]) -> Self {
+        Self {
+            h: array[0],
+            s: array[1],
+            v: array[2],
+            alpha: array[3],
+        }
+    }
+}
+
 impl From<Rgb> for Hsva {
     fn from(other: Rgb) -> Self {
         Self::from(Hsv::from(other))
@@ -380,6 +422,16 @@ impl From<Hsla> for Hsva {
 //
 // impl From<*> for Hsl
 //
+
+impl From<[f64; 3]> for Hsl {
+    fn from(array: [f64; 3]) -> Self {
+        Self {
+            h: array[0],
+            s: array[1],
+            l: array[2],
+        }
+    }
+}
 
 impl From<Rgb> for Hsl {
     fn from(other: Rgb) -> Self {
@@ -447,6 +499,17 @@ impl From<Hsva> for Hsl {
 }
 
 // impl From<*> for Hsla
+
+impl From<[f64; 4]> for Hsla {
+    fn from(array: [f64; 4]) -> Self {
+        Self {
+            h: array[0],
+            l: array[1],
+            s: array[2],
+            alpha: array[3],
+        }
+    }
+}
 
 impl From<Rgb> for Hsla {
     fn from(other: Rgb) -> Self {
