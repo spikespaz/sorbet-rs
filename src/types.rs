@@ -41,9 +41,36 @@ pub struct Hsl {
     pub l: f64,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Rgba {
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
+    pub alpha: f64,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Hsva {
+    pub h: f64,
+    pub s: f64,
+    pub v: f64,
+    pub alpha: f64,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Hsla {
+    pub h: f64,
+    pub s: f64,
+    pub l: f64,
+    pub alpha: f64,
+}
+
 impl Eq for Rgb {}
 impl Eq for Hsv {}
 impl Eq for Hsl {}
+impl Eq for Rgba {}
+impl Eq for Hsva {}
+impl Eq for Hsla {}
 
 #[allow(clippy::derive_hash_xor_eq)]
 impl hash::Hash for Rgb {
@@ -69,6 +96,36 @@ impl hash::Hash for Hsl {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.l.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl hash::Hash for Rgba {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.r.to_bits().hash(state);
+        self.g.to_bits().hash(state);
+        self.b.to_bits().hash(state);
+        self.alpha.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl hash::Hash for Hsva {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.v.to_bits().hash(state);
+        self.alpha.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl hash::Hash for Hsla {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.l.to_bits().hash(state);
+        self.alpha.to_bits().hash(state);
     }
 }
 
@@ -185,21 +242,66 @@ impl From<Hsv> for Hsl {
     }
 }
 
-impl ColorType for Rgb {
-    fn to_array(&self) -> [f64; 3] {
-        [self.r, self.g, self.b]
+impl From<Rgba> for Rgb {
+    fn from(other: Rgba) -> Self {
+        Self {
+            r: other.r,
+            g: other.g,
+            b: other.b,
+        }
     }
 }
 
-impl ColorType for Hsv {
-    fn to_array(&self) -> [f64; 3] {
-        [self.h, self.s, self.v]
+impl From<Hsva> for Hsv {
+    fn from(other: Hsva) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            v: other.v,
+        }
     }
 }
 
-impl ColorType for Hsl {
-    fn to_array(&self) -> [f64; 3] {
-        [self.h, self.s, self.l]
+impl From<Hsla> for Hsl {
+    fn from(other: Hsla) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            l: other.l,
+        }
+    }
+}
+
+impl From<Rgb> for Rgba {
+    fn from(other: Rgb) -> Self {
+        Self {
+            r: other.r,
+            g: other.g,
+            b: other.b,
+            alpha: 1.0,
+        }
+    }
+}
+
+impl From<Hsv> for Hsva {
+    fn from(other: Hsv) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            v: other.v,
+            alpha: 1.0,
+        }
+    }
+}
+
+impl From<Hsl> for Hsla {
+    fn from(other: Hsl) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            l: other.l,
+            alpha: 1.0,
+        }
     }
 }
 
