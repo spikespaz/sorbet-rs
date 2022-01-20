@@ -28,25 +28,18 @@ pub struct Rgb {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Hsv {
-    pub h: f64,
-    pub s: f64,
-    pub v: f64,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Hsl {
-    pub h: f64,
-    pub s: f64,
-    pub l: f64,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgba {
     pub r: f64,
     pub g: f64,
     pub b: f64,
     pub alpha: f64,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Hsv {
+    pub h: f64,
+    pub s: f64,
+    pub v: f64,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -58,6 +51,13 @@ pub struct Hsva {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Hsl {
+    pub h: f64,
+    pub s: f64,
+    pub l: f64,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsla {
     pub h: f64,
     pub s: f64,
@@ -66,10 +66,10 @@ pub struct Hsla {
 }
 
 impl Eq for Rgb {}
-impl Eq for Hsv {}
-impl Eq for Hsl {}
 impl Eq for Rgba {}
+impl Eq for Hsv {}
 impl Eq for Hsva {}
+impl Eq for Hsl {}
 impl Eq for Hsla {}
 
 #[allow(clippy::derive_hash_xor_eq)]
@@ -78,24 +78,6 @@ impl hash::Hash for Rgb {
         self.r.to_bits().hash(state);
         self.g.to_bits().hash(state);
         self.b.to_bits().hash(state);
-    }
-}
-
-#[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Hsv {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.h.to_bits().hash(state);
-        self.s.to_bits().hash(state);
-        self.v.to_bits().hash(state);
-    }
-}
-
-#[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Hsl {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.h.to_bits().hash(state);
-        self.s.to_bits().hash(state);
-        self.l.to_bits().hash(state);
     }
 }
 
@@ -110,12 +92,30 @@ impl hash::Hash for Rgba {
 }
 
 #[allow(clippy::derive_hash_xor_eq)]
+impl hash::Hash for Hsv {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.v.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
 impl hash::Hash for Hsva {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.v.to_bits().hash(state);
         self.alpha.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl hash::Hash for Hsl {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.l.to_bits().hash(state);
     }
 }
 
@@ -128,6 +128,10 @@ impl hash::Hash for Hsla {
         self.alpha.to_bits().hash(state);
     }
 }
+
+//
+// impl From<*> for Rgb
+//
 
 impl From<Hsv> for Rgb {
     fn from(other: Hsv) -> Self {
@@ -156,6 +160,35 @@ impl From<Hsl> for Rgb {
         Self { r, g, b }
     }
 }
+
+impl From<Rgba> for Rgb {
+    fn from(other: Rgba) -> Self {
+        Self {
+            r: other.r,
+            g: other.g,
+            b: other.b,
+        }
+    }
+}
+
+//
+// impl From<*> for Rgba
+//
+
+impl From<Rgb> for Rgba {
+    fn from(other: Rgb) -> Self {
+        Self {
+            r: other.r,
+            g: other.g,
+            b: other.b,
+            alpha: 1.0,
+        }
+    }
+}
+
+//
+// impl From<*> for Hsv
+//
 
 impl From<Rgb> for Hsv {
     fn from(other: Rgb) -> Self {
@@ -198,6 +231,35 @@ impl From<Hsl> for Hsv {
         }
     }
 }
+
+impl From<Hsva> for Hsv {
+    fn from(other: Hsva) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            v: other.v,
+        }
+    }
+}
+
+//
+// impl From<*> for Hsva
+//
+
+impl From<Hsv> for Hsva {
+    fn from(other: Hsv) -> Self {
+        Self {
+            h: other.h,
+            s: other.s,
+            v: other.v,
+            alpha: 1.0,
+        }
+    }
+}
+
+//
+// impl From<*> for Hsl
+//
 
 impl From<Rgb> for Hsl {
     fn from(other: Rgb) -> Self {
@@ -242,26 +304,6 @@ impl From<Hsv> for Hsl {
     }
 }
 
-impl From<Rgba> for Rgb {
-    fn from(other: Rgba) -> Self {
-        Self {
-            r: other.r,
-            g: other.g,
-            b: other.b,
-        }
-    }
-}
-
-impl From<Hsva> for Hsv {
-    fn from(other: Hsva) -> Self {
-        Self {
-            h: other.h,
-            s: other.s,
-            v: other.v,
-        }
-    }
-}
-
 impl From<Hsla> for Hsl {
     fn from(other: Hsla) -> Self {
         Self {
@@ -272,27 +314,7 @@ impl From<Hsla> for Hsl {
     }
 }
 
-impl From<Rgb> for Rgba {
-    fn from(other: Rgb) -> Self {
-        Self {
-            r: other.r,
-            g: other.g,
-            b: other.b,
-            alpha: 1.0,
-        }
-    }
-}
-
-impl From<Hsv> for Hsva {
-    fn from(other: Hsv) -> Self {
-        Self {
-            h: other.h,
-            s: other.s,
-            v: other.v,
-            alpha: 1.0,
-        }
-    }
-}
+// impl From<*> for Hsla
 
 impl From<Hsl> for Hsla {
     fn from(other: Hsl) -> Self {
@@ -304,6 +326,10 @@ impl From<Hsl> for Hsla {
         }
     }
 }
+
+//
+//
+//
 
 fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
     match () {
