@@ -37,7 +37,7 @@ impl hash::Hash for Hsl {
 }
 
 //
-// Implement From for all other Color types
+// Implement to/from primitives
 //
 
 impl From<[f64; 3]> for Hsl {
@@ -49,6 +49,16 @@ impl From<[f64; 3]> for Hsl {
         }
     }
 }
+
+impl From<Hsl> for [f64; 3] {
+    fn from(color: Hsl) -> Self {
+        [color.h, color.s, color.l]
+    }
+}
+
+//
+// Implement From for all other Color types
+//
 
 impl From<Rgb> for Hsl {
     fn from(other: Rgb) -> Self {
