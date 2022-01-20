@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-use std::hash::Hash;
+use std::hash;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgb {
@@ -42,8 +42,8 @@ impl Eq for Hsv {}
 impl Eq for Hsl {}
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl Hash for Rgb {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl hash::Hash for Rgb {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
         self.r.to_bits().hash(state);
         self.g.to_bits().hash(state);
         self.b.to_bits().hash(state);
@@ -51,8 +51,8 @@ impl Hash for Rgb {
 }
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl Hash for Hsv {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl hash::Hash for Hsv {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.v.to_bits().hash(state);
@@ -60,8 +60,8 @@ impl Hash for Hsv {
 }
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl Hash for Hsl {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl hash::Hash for Hsl {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.l.to_bits().hash(state);

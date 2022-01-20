@@ -16,10 +16,7 @@
 
 pub mod types;
 
-use std::{
-    fmt::{self, Debug, Display},
-    hash::Hash,
-};
+use std::{fmt, hash};
 use types::*;
 
 #[derive(Copy, Clone, PartialEq)]
@@ -32,8 +29,8 @@ pub enum Color {
 impl Eq for Color {}
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl Hash for Color {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl hash::Hash for Color {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
         std::mem::discriminant(self).hash(state);
 
         match self {
@@ -53,7 +50,7 @@ impl Hash for Color {
     }
 }
 
-impl Debug for Color {
+impl fmt::Debug for Color {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Rgba { inner, alpha } => formatter
@@ -81,7 +78,7 @@ impl Debug for Color {
     }
 }
 
-impl Display for Color {
+impl fmt::Display for Color {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str(&self.to_hex())
     }
