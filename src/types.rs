@@ -31,6 +31,29 @@ pub trait Color:
     + From<Hsl>
     + From<Hsla>
 {
+    fn new(color: &str) -> Self {
+        let color = match color.strip_prefix('#') {
+            Some(string) => string,
+            None => color,
+        };
+
+        let r = u8::from_str_radix(&color[0..2], 16).expect("invalid hexadecimal string");
+        let g = u8::from_str_radix(&color[2..4], 16).expect("invalid hexadecimal string");
+        let b = u8::from_str_radix(&color[4..6], 16).expect("invalid hexadecimal string");
+
+        let alpha = if color.len() == 8 {
+            u8::from_str_radix(&color[6..8], 16).expect("invalid hexadecimal string")
+        } else {
+            1
+        };
+
+        Self::from(Rgba {
+            r: r as f64 / 255.0,
+            g: g as f64 / 255.0,
+            b: b as f64 / 255.0,
+            alpha: alpha as f64 / 255.0,
+        })
+    }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -575,3 +598,11 @@ fn neighboring(c: f64, x: f64, h1: f64) -> (f64, f64, f64) {
         _ => (0.0, 0.0, 0.0),
     }
 }
+
+// #[cfg(test)]
+// mod test {
+//     #[test]
+//     fn test_rgb_from() {
+//         Rgb::from(Rgb{0.1, 0.2,})
+//     }
+// }
