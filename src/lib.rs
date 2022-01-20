@@ -16,13 +16,39 @@
 
 pub mod types;
 
+use std::hash::Hash;
+
 use types::*;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Color {
     Rgba { inner: Rgb, alpha: Option<f64> },
     Hsva { inner: Hsv, alpha: Option<f64> },
     Hsla { inner: Hsl, alpha: Option<f64> },
+}
+
+impl Eq for Color {}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl Hash for Color {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        std::mem::discriminant(self).hash(state);
+
+        match self {
+            Self::Rgba { inner, alpha } => {
+                inner.hash(state);
+                alpha.map(f64::to_bits).hash(state);
+            }
+            Self::Hsva { inner, alpha } => {
+                inner.hash(state);
+                alpha.map(f64::to_bits).hash(state);
+            }
+            Self::Hsla { inner, alpha } => {
+                inner.hash(state);
+                alpha.map(f64::to_bits).hash(state);
+            }
+        }
+    }
 }
 
 impl Color {

@@ -14,25 +14,58 @@
     limitations under the License.
 */
 
-#[derive(Copy, Clone, Debug)]
+use std::hash::Hash;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgb {
     pub r: f64,
     pub g: f64,
     pub b: f64,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsv {
     pub h: f64,
     pub s: f64,
     pub v: f64,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsl {
     pub h: f64,
     pub s: f64,
     pub l: f64,
+}
+
+impl Eq for Rgb {}
+impl Eq for Hsv {}
+impl Eq for Hsl {}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl Hash for Rgb {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.r.to_bits().hash(state);
+        self.g.to_bits().hash(state);
+        self.b.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl Hash for Hsv {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.v.to_bits().hash(state);
+    }
+}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl Hash for Hsl {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.h.to_bits().hash(state);
+        self.s.to_bits().hash(state);
+        self.l.to_bits().hash(state);
+    }
 }
 
 impl Rgb {
