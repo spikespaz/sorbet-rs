@@ -14,10 +14,23 @@
     limitations under the License.
 */
 
+use std::fmt;
 use std::hash;
 
-pub trait ColorType {
-    fn to_array(&self) -> [f64; 3];
+pub trait Color:
+    Copy
+    + Clone
+    + fmt::Debug
+    + PartialEq
+    + Eq
+    + hash::Hash
+    + From<Rgb>
+    + From<Rgba>
+    + From<Hsv>
+    + From<Hsva>
+    + From<Hsl>
+    + From<Hsla>
+{
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -71,6 +84,13 @@ impl Eq for Hsv {}
 impl Eq for Hsva {}
 impl Eq for Hsl {}
 impl Eq for Hsla {}
+
+impl Color for Rgb {}
+impl Color for Rgba {}
+impl Color for Hsv {}
+impl Color for Hsva {}
+impl Color for Hsl {}
+impl Color for Hsla {}
 
 #[allow(clippy::derive_hash_xor_eq)]
 impl hash::Hash for Rgb {
@@ -171,6 +191,18 @@ impl From<Rgba> for Rgb {
     }
 }
 
+impl From<Hsva> for Rgb {
+    fn from(other: Hsva) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsla> for Rgb {
+    fn from(other: Hsla) -> Self {
+        todo!();
+    }
+}
+
 //
 // impl From<*> for Rgba
 //
@@ -183,6 +215,30 @@ impl From<Rgb> for Rgba {
             b: other.b,
             alpha: 1.0,
         }
+    }
+}
+
+impl From<Hsv> for Rgba {
+    fn from(other: Hsv) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsl> for Rgba {
+    fn from(other: Hsl) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsva> for Rgba {
+    fn from(other: Hsva) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsla> for Rgba {
+    fn from(other: Hsla) -> Self {
+        todo!();
     }
 }
 
@@ -232,6 +288,12 @@ impl From<Hsl> for Hsv {
     }
 }
 
+impl From<Rgba> for Hsv {
+    fn from(other: Rgba) -> Self {
+        todo!();
+    }
+}
+
 impl From<Hsva> for Hsv {
     fn from(other: Hsva) -> Self {
         Self {
@@ -242,9 +304,21 @@ impl From<Hsva> for Hsv {
     }
 }
 
+impl From<Hsla> for Hsv {
+    fn from(other: Hsla) -> Self {
+        todo!();
+    }
+}
+
 //
 // impl From<*> for Hsva
 //
+
+impl From<Rgb> for Hsva {
+    fn from(other: Rgb) -> Self {
+        todo!();
+    }
+}
 
 impl From<Hsv> for Hsva {
     fn from(other: Hsv) -> Self {
@@ -254,6 +328,24 @@ impl From<Hsv> for Hsva {
             v: other.v,
             alpha: 1.0,
         }
+    }
+}
+
+impl From<Hsl> for Hsva {
+    fn from(other: Hsl) -> Self {
+        todo!();
+    }
+}
+
+impl From<Rgba> for Hsva {
+    fn from(other: Rgba) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsla> for Hsva {
+    fn from(other: Hsla) -> Self {
+        todo!();
     }
 }
 
@@ -304,6 +396,12 @@ impl From<Hsv> for Hsl {
     }
 }
 
+impl From<Rgba> for Hsl {
+    fn from(other: Rgba) -> Self {
+        todo!();
+    }
+}
+
 impl From<Hsla> for Hsl {
     fn from(other: Hsla) -> Self {
         Self {
@@ -314,7 +412,25 @@ impl From<Hsla> for Hsl {
     }
 }
 
+impl From<Hsva> for Hsl {
+    fn from(other: Hsva) -> Self {
+        todo!();
+    }
+}
+
 // impl From<*> for Hsla
+
+impl From<Rgb> for Hsla {
+    fn from(other: Rgb) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsv> for Hsla {
+    fn from(other: Hsv) -> Self {
+        todo!();
+    }
+}
 
 impl From<Hsl> for Hsla {
     fn from(other: Hsl) -> Self {
@@ -324,6 +440,18 @@ impl From<Hsl> for Hsla {
             l: other.l,
             alpha: 1.0,
         }
+    }
+}
+
+impl From<Rgba> for Hsla {
+    fn from(other: Rgba) -> Self {
+        todo!();
+    }
+}
+
+impl From<Hsva> for Hsla {
+    fn from(other: Hsva) -> Self {
+        todo!();
     }
 }
 
