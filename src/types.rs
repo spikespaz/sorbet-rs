@@ -193,13 +193,13 @@ impl From<Rgba> for Rgb {
 
 impl From<Hsva> for Rgb {
     fn from(other: Hsva) -> Self {
-        todo!();
+        Self::from(Hsv::from(other))
     }
 }
 
 impl From<Hsla> for Rgb {
     fn from(other: Hsla) -> Self {
-        todo!();
+        Self::from(Hsl::from(other))
     }
 }
 
@@ -220,25 +220,39 @@ impl From<Rgb> for Rgba {
 
 impl From<Hsv> for Rgba {
     fn from(other: Hsv) -> Self {
-        todo!();
+        Self::from(Rgb::from(other))
     }
 }
 
 impl From<Hsl> for Rgba {
     fn from(other: Hsl) -> Self {
-        todo!();
+        Self::from(Rgb::from(other))
     }
 }
 
 impl From<Hsva> for Rgba {
     fn from(other: Hsva) -> Self {
-        todo!();
+        let Rgb { r, g, b } = Rgb::from(other);
+
+        Self {
+            r,
+            g,
+            b,
+            alpha: other.alpha,
+        }
     }
 }
 
 impl From<Hsla> for Rgba {
     fn from(other: Hsla) -> Self {
-        todo!();
+        let Rgb { r, g, b } = Rgb::from(other);
+
+        Self {
+            r,
+            g,
+            b,
+            alpha: other.alpha,
+        }
     }
 }
 
@@ -290,7 +304,7 @@ impl From<Hsl> for Hsv {
 
 impl From<Rgba> for Hsv {
     fn from(other: Rgba) -> Self {
-        todo!();
+        Self::from(Rgb::from(other))
     }
 }
 
@@ -306,7 +320,7 @@ impl From<Hsva> for Hsv {
 
 impl From<Hsla> for Hsv {
     fn from(other: Hsla) -> Self {
-        todo!();
+        Self::from(Hsl::from(other))
     }
 }
 
@@ -316,7 +330,7 @@ impl From<Hsla> for Hsv {
 
 impl From<Rgb> for Hsva {
     fn from(other: Rgb) -> Self {
-        todo!();
+        Self::from(Hsv::from(other))
     }
 }
 
@@ -333,19 +347,33 @@ impl From<Hsv> for Hsva {
 
 impl From<Hsl> for Hsva {
     fn from(other: Hsl) -> Self {
-        todo!();
+        Self::from(Hsv::from(other))
     }
 }
 
 impl From<Rgba> for Hsva {
     fn from(other: Rgba) -> Self {
-        todo!();
+        let Hsv { h, s, v } = Hsv::from(other);
+
+        Self {
+            h,
+            s,
+            v,
+            alpha: other.alpha,
+        }
     }
 }
 
 impl From<Hsla> for Hsva {
     fn from(other: Hsla) -> Self {
-        todo!();
+        let Hsv { h, s, v } = Hsv::from(other);
+
+        Self {
+            h,
+            s,
+            v,
+            alpha: other.alpha,
+        }
     }
 }
 
@@ -398,7 +426,7 @@ impl From<Hsv> for Hsl {
 
 impl From<Rgba> for Hsl {
     fn from(other: Rgba) -> Self {
-        todo!();
+        Self::from(Rgb::from(other))
     }
 }
 
@@ -414,7 +442,7 @@ impl From<Hsla> for Hsl {
 
 impl From<Hsva> for Hsl {
     fn from(other: Hsva) -> Self {
-        todo!();
+        Self::from(Hsv::from(other))
     }
 }
 
@@ -422,13 +450,13 @@ impl From<Hsva> for Hsl {
 
 impl From<Rgb> for Hsla {
     fn from(other: Rgb) -> Self {
-        todo!();
+        Self::from(Rgba::from(other))
     }
 }
 
 impl From<Hsv> for Hsla {
     fn from(other: Hsv) -> Self {
-        todo!();
+        Self::from(Hsva::from(other))
     }
 }
 
@@ -445,13 +473,27 @@ impl From<Hsl> for Hsla {
 
 impl From<Rgba> for Hsla {
     fn from(other: Rgba) -> Self {
-        todo!();
+        let Hsl { h, s, l } = Hsl::from(other);
+
+        Self {
+            h,
+            s,
+            l,
+            alpha: other.alpha,
+        }
     }
 }
 
 impl From<Hsva> for Hsla {
     fn from(other: Hsva) -> Self {
-        todo!();
+        let Hsl { h, s, l } = Hsl::from(other);
+
+        Self {
+            h,
+            s,
+            l,
+            alpha: other.alpha,
+        }
     }
 }
 
