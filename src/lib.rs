@@ -16,11 +16,13 @@
 
 pub mod types;
 
-use std::hash::Hash;
-
+use std::{
+    fmt::{self, Debug, Display},
+    hash::Hash,
+};
 use types::*;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Color {
     Rgba { inner: Rgb, alpha: Option<f64> },
     Hsva { inner: Hsv, alpha: Option<f64> },
@@ -48,6 +50,40 @@ impl Hash for Color {
                 alpha.map(f64::to_bits).hash(state);
             }
         }
+    }
+}
+
+impl Debug for Color {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Rgba { inner, alpha } => formatter
+                .debug_struct("Rgba")
+                .field("r", &inner.r)
+                .field("g", &inner.g)
+                .field("b", &inner.b)
+                .field("alpha", &alpha)
+                .finish(),
+            Self::Hsva { inner, alpha } => formatter
+                .debug_struct("Hsva")
+                .field("h", &inner.h)
+                .field("s", &inner.s)
+                .field("v", &inner.v)
+                .field("alpha", &alpha)
+                .finish(),
+            Self::Hsla { inner, alpha } => formatter
+                .debug_struct("Hsla")
+                .field("h", &inner.h)
+                .field("s", &inner.s)
+                .field("l", &inner.l)
+                .field("alpha", &alpha)
+                .finish(),
+        }
+    }
+}
+
+impl Display for Color {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(&self.to_hex())
     }
 }
 
