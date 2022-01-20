@@ -72,17 +72,45 @@ impl hash::Hash for Hsl {
     }
 }
 
-impl Rgb {
-    pub fn to_hsv(&self) -> Hsv {
+impl From<Hsv> for Rgb {
+    fn from(other: Hsv) -> Self {
+        //https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+        let c = other.v * other.s;
+        let h1 = other.h / 60.0;
+        let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
+        let (r1, g1, b1) = neighboring(c, x, h1);
+        let m = other.v - c;
+        let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+
+        Self { r, g, b }
+    }
+}
+
+impl From<Hsl> for Rgb {
+    fn from(other: Hsl) -> Self {
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
+        let c = (1.0 - (2.0 * other.l - 1.0).abs()) * other.s;
+        let h1 = other.h / 60.0;
+        let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
+        let (r1, g1, b1) = neighboring(c, x, h1);
+        let m = other.l - (c / 2.0);
+        let (r, g, b) = (r1 + m, g1 + m, b1 + m);
+
+        Self { r, g, b }
+    }
+}
+
+impl From<Rgb> for Hsv {
+    fn from(other: Rgb) -> Self {
         // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
-        let xmax = self.r.max(self.g.max(self.b));
-        let xmin = self.r.min(self.g.min(self.b));
+        let xmax = other.r.max(other.g.max(other.b));
+        let xmin = other.r.min(other.g.min(other.b));
         let c = xmax - xmin;
         let mut h = match () {
             _ if c == 0.0 => 0.0,
-            _ if xmax == self.r => 60.0 * ((self.g - self.b) / c),
-            _ if xmax == self.g => 60.0 * ((self.b - self.r) / c + 2.0),
-            _ if xmax == self.b => 60.0 * ((self.r - self.g) / c + 4.0),
+            _ if xmax == other.r => 60.0 * ((other.g - other.b) / c),
+            _ if xmax == other.g => 60.0 * ((other.b - other.r) / c + 2.0),
+            _ if xmax == other.b => 60.0 * ((other.r - other.g) / c + 4.0),
             _ => panic!(),
         };
         if h < 0.0 {
@@ -93,19 +121,38 @@ impl Rgb {
             _ => c / xmax,
         };
 
-        Hsv { h, s, v: xmax }
+        Self { h, s, v: xmax }
     }
+}
 
-    pub fn to_hsl(&self) -> Hsl {
+impl From<Hsl> for Hsv {
+    fn from(other: Hsl) -> Self {
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_HSV
+        let v = other.l + other.s * other.l.min(1.0 - other.l);
+        let sv = match () {
+            _ if v == 0.0 => 0.0,
+            _ => 2.0 * (1.0 - other.l / v),
+        };
+
+        Self {
+            h: other.h,
+            s: sv,
+            v,
+        }
+    }
+}
+
+impl From<Rgb> for Hsl {
+    fn from(other: Rgb) -> Self {
         // https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
-        let xmax = self.r.max(self.g.max(self.b));
-        let xmin = self.r.min(self.g.min(self.b));
+        let xmax = other.r.max(other.g.max(other.b));
+        let xmin = other.r.min(other.g.min(other.b));
         let c = xmax - xmin;
         let mut h = match () {
             _ if c == 0.0 => 0.0,
-            _ if xmax == self.r => 60.0 * ((self.g - self.b) / c),
-            _ if xmax == self.g => 60.0 * ((self.b - self.r) / c + 2.0),
-            _ if xmax == self.b => 60.0 * ((self.r - self.g) / c + 4.0),
+            _ if xmax == other.r => 60.0 * ((other.g - other.b) / c),
+            _ if xmax == other.g => 60.0 * ((other.b - other.r) / c + 2.0),
+            _ if xmax == other.b => 60.0 * ((other.r - other.g) / c + 4.0),
             _ => panic!(),
         };
         if h < 0.0 {
@@ -117,64 +164,23 @@ impl Rgb {
             _ => c / (1.0 - (2.0 * xmax - c - 1.0).abs()),
         };
 
-        Hsl { h, s, l }
+        Self { h, s, l }
     }
 }
 
-impl Hsv {
-    pub fn to_rgb(&self) -> Rgb {
-        //https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
-        let c = self.v * self.s;
-        let h1 = self.h / 60.0;
-        let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
-        let (r1, g1, b1) = neighboring(c, x, h1);
-        let m = self.v - c;
-        let (r, g, b) = (r1 + m, g1 + m, b1 + m);
-
-        Rgb { r, g, b }
-    }
-
-    pub fn to_hsl(&self) -> Hsl {
+impl From<Hsv> for Hsl {
+    fn from(other: Hsv) -> Self {
         // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_HSL
-        let l = self.v * (1.0 - (self.s / 2.0));
+        let l = other.v * (1.0 - (other.s / 2.0));
         let sl = match () {
             _ if l == 0.0 || l == 1.0 => 0.0,
-            _ => 2.0 * (1.0 - l / self.v),
+            _ => 2.0 * (1.0 - l / other.v),
         };
 
-        Hsl {
-            h: self.h,
+        Self {
+            h: other.h,
             s: sl,
             l,
-        }
-    }
-}
-
-impl Hsl {
-    pub fn to_rgb(&self) -> Rgb {
-        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
-        let c = (1.0 - (2.0 * self.l - 1.0).abs()) * self.s;
-        let h1 = self.h / 60.0;
-        let x = c * (1.0 - (h1 % 2.0 - 1.0).abs());
-        let (r1, g1, b1) = neighboring(c, x, h1);
-        let m = self.l - (c / 2.0);
-        let (r, g, b) = (r1 + m, g1 + m, b1 + m);
-
-        Rgb { r, g, b }
-    }
-
-    pub fn to_hsv(&self) -> Hsv {
-        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_HSV
-        let v = self.l + self.s * self.l.min(1.0 - self.l);
-        let sv = match () {
-            _ if v == 0.0 => 0.0,
-            _ => 2.0 * (1.0 - self.l / v),
-        };
-
-        Hsv {
-            h: self.h,
-            s: sv,
-            v,
         }
     }
 }

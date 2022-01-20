@@ -190,11 +190,11 @@ impl Color {
         match self {
             Color::Rgba { .. } => *self,
             Color::Hsva { inner, alpha } => Color::Rgba {
-                inner: inner.to_rgb(),
+                inner: Rgb::from(*inner),
                 alpha: *alpha,
             },
             Color::Hsla { inner, alpha } => Color::Rgba {
-                inner: inner.to_rgb(),
+                inner: Rgb::from(*inner),
                 alpha: *alpha,
             },
         }
@@ -203,12 +203,12 @@ impl Color {
     pub fn to_hsva(&self) -> Self {
         match self {
             Color::Rgba { inner, alpha } => Color::Hsva {
-                inner: inner.to_hsv(),
+                inner: Hsv::from(*inner),
                 alpha: *alpha,
             },
             Color::Hsva { .. } => *self,
             Color::Hsla { inner, alpha } => Color::Hsva {
-                inner: inner.to_hsv(),
+                inner: Hsv::from(*inner),
                 alpha: *alpha,
             },
         }
@@ -217,11 +217,11 @@ impl Color {
     pub fn to_hsla(&self) -> Self {
         match self {
             Color::Rgba { inner, alpha } => Color::Hsla {
-                inner: inner.to_hsl(),
+                inner: Hsl::from(*inner),
                 alpha: *alpha,
             },
             Color::Hsva { inner, alpha } => Color::Hsla {
-                inner: inner.to_hsl(),
+                inner: Hsl::from(*inner),
                 alpha: *alpha,
             },
             Color::Hsla { .. } => *self,
