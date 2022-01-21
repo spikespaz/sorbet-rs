@@ -38,6 +38,12 @@ impl hash::Hash for Rgba {
     }
 }
 
+impl fmt::Display for Rgba {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "#{:08X}", u32::from(*self))
+    }
+}
+
 //
 // Implement to/from primitives
 //
@@ -61,6 +67,25 @@ impl From<Rgba> for [u8; 4] {
             (color.b * 255.0).round() as u8,
             (color.alpha * 255.0).round() as u8,
         ]
+    }
+}
+
+impl From<u32> for Rgba {
+    fn from(int: u32) -> Self {
+        let r = (int >> 24) as u8;
+        let g = (int >> 16) as u8;
+        let b = (int >> 8) as u8;
+        let alpha = int as u8;
+
+        Self::from([r, g, b, alpha])
+    }
+}
+
+impl From<Rgba> for u32 {
+    fn from(color: Rgba) -> u32 {
+        let [r, g, b, alpha]: [u8; 4] = color.into();
+
+        ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (alpha as u32)
     }
 }
 
