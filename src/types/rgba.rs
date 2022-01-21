@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-use std::hash;
+use std::{fmt, hash};
 
 use crate::types::*;
 
@@ -35,17 +35,6 @@ impl hash::Hash for Rgba {
         self.g.to_bits().hash(state);
         self.b.to_bits().hash(state);
         self.alpha.to_bits().hash(state);
-    }
-}
-
-//
-//  Special methods
-//
-
-impl Rgba {
-    pub fn to_hex(&self) -> String {
-        let [r, g, b, alpha]: [u8; 4] = (*self).into();
-        format!("#{:02X}{:02X}{:02X}{:02X}", r, g, b, alpha)
     }
 }
 

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-use std::hash;
+use std::{fmt, hash};
 
 use crate::types::*;
 
@@ -36,14 +36,9 @@ impl hash::Hash for Rgb {
     }
 }
 
-//
-// Special methods
-//
-
-impl Rgb {
-    pub fn to_hex(&self) -> String {
-        let [r, g, b]: [u8; 3] = (*self).into();
-        format!("#{:02X}{:02X}{:02X}", r, g, b)
+impl fmt::Display for Rgb {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{:06X}", u32::from(*self))
     }
 }
 
@@ -68,6 +63,24 @@ impl From<Rgb> for [u8; 3] {
             (color.g * 255.0).round() as u8,
             (color.b * 255.0).round() as u8,
         ]
+    }
+}
+
+impl From<u32> for Rgb {
+    fn from(int: u32) -> Self {
+        let r = (int & 0xFF) as u8;
+        let g = (int >> 8 & 0xFF) as u8;
+        let b = (int >> 16 & 0xFF) as u8;
+
+        Self::from([r, g, b])
+    }
+}
+
+impl From<Rgb> for u32 {
+    fn from(color: Rgb) -> u32 {
+        let [r, g, b]: [u8; 3] = color.into();
+
+        r as u32 | ((g as u32) << 8) | ((b as u32) << 16)
     }
 }
 
