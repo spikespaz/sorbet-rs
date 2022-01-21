@@ -68,9 +68,9 @@ impl From<Rgb> for [u8; 3] {
 
 impl From<u32> for Rgb {
     fn from(int: u32) -> Self {
-        let r = (int & 0xFF) as u8;
+        let b = (int & 0xFF) as u8;
         let g = (int >> 8 & 0xFF) as u8;
-        let b = (int >> 16 & 0xFF) as u8;
+        let r = (int >> 16 & 0xFF) as u8;
 
         Self::from([r, g, b])
     }
@@ -80,7 +80,7 @@ impl From<Rgb> for u32 {
     fn from(color: Rgb) -> u32 {
         let [r, g, b]: [u8; 3] = color.into();
 
-        r as u32 | ((g as u32) << 8) | ((b as u32) << 16)
+        b as u32 | ((g as u32) << 8) | ((r as u32) << 16)
     }
 }
 

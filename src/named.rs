@@ -1,5 +1,5 @@
 /// Named colors are defined by the W3 CSS Color Module Level 4 draft.
-/// https://www.w3.org/TR/css-color-4/#named-colors
+/// <https://www.w3.org/TR/css-color-4/#named-colors>
 
 pub const ALICEBLUE: u32 = 0xF0F8FF;
 pub const ANTIQUEWHITE: u32 = 0xFAEBD7;
