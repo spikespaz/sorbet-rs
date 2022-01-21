@@ -14,6 +14,7 @@
     limitations under the License.
 */
 
+pub mod named;
 pub mod types;
 
 use std::{fmt, hash};
