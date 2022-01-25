@@ -35,8 +35,16 @@ pub trait Color:
     + From<Hsl>
     + From<Hsla>
 {
-    fn new(color: &str) -> Self {
-        Self::from(Rgba::from(color))
+    fn new(string: &str) -> Self {
+        let string = string.strip_prefix('#').unwrap_or(string);
+
+        if string.len() == 6 {
+            Self::from(Rgb::from(string))
+        } else if string.len() == 8 {
+            Self::from(Rgba::from(string))
+        } else {
+            panic!("provided string must have 6 or 8 hexadecimal digits");
+        }
     }
 }
 
