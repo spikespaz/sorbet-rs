@@ -1,12 +1,11 @@
 [package]
 name = "sorbet-color"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Jacob Birkett <jacob@birkett.dev>"]
 edition = "2021"
 description = "A Rust library for working with (and converting) colors in different spaces."
-# documentation = "https://birkett.dev/docs/sorbet-color-rs"
-# homepage = "https://birkett.dev/projects/sorbet-color-rs"
-repository = "https://github.com/spikespaz/sorbet-color-rs"
+homepage = "https://github.com/spikespaz/sorbet-rs/tree/master/sorbet-color"
+repository = "https://github.com/spikespaz/sorbet-rs"
 license = "Apache-2.0"
 keywords = ["graphics", "color", "conversion", "rgb", "hsl"]
 categories = ["graphics"]
