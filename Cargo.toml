@@ -1,20 +1,7 @@
-[package]
-name = "sorbet-color"
-version = "0.0.1"
-authors = ["Jacob Birkett <jacob@birkett.dev>"]
-edition = "2021"
-description = "A Rust library for working with (and converting) colors in different spaces."
-# documentation = "https://birkett.dev/docs/sorbet-color-rs"
-# homepage = "https://birkett.dev/projects/sorbet-color-rs"
-repository = "https://github.com/spikespaz/sorbet-color-rs"
-license = "Apache-2.0"
-keywords = ["graphics", "color", "conversion", "rgb", "hsl"]
-categories = ["graphics"]
-publish = true
+[workspace]
+members = [
+    "sorbet",
+    "sorbet-widgets",
+    "sorbet-color",
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-
-[dev-dependencies]
-once_cell = "1.9"
