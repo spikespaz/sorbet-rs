@@ -6,3 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+thiserror = "1"
+# winit = "0.26"
+# wgpu = "0.12"
+# lyon = "0.17"
+sorbet-color = { path = "../sorbet-color" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+fontconfig = "0.3"
+
+[dev-dependencies]
+test-case = "2"

@@ -1,3 +1,5 @@
+pub mod fonts;
+
 #[cfg(test)]
 mod tests {
     #[test]
