@@ -171,6 +171,29 @@ impl From<Hsla> for Rgb {
 }
 
 //
+// Implement to/from wgpu::Color
+//
+
+#[cfg(feature = "wgpu")]
+impl From<wgpu::Color> for Rgb {
+    fn from(other: wgpu::Color) -> Rgb {
+        Rgb::from([other.r, other.g, other.b])
+    }
+}
+
+#[cfg(feature = "wgpu")]
+impl From<Rgb> for wgpu::Color {
+    fn from(other: Rgb) -> wgpu::Color {
+        wgpu::Color {
+            r: other.r,
+            g: other.g,
+            b: other.b,
+            a: 1.0,
+        }
+    }
+}
+
+//
 // Math helpers
 //
 
