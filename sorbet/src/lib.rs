@@ -4,151 +4,126 @@ pub mod math {
     pub use lyon::math::*;
 }
 
-/// This trait provides convenience methods for getting the edges and corner-points of an implementor's
-/// bounding box. See the note on [`Bounded::size()`] and [`Bounded::size_checked()`], some of the methods
-/// may be [`unimplemented!()`] and any of the others that depend on these unchecked methods will panic.
-/// Any type that implements this trait should clearly state whether or not you should use the unchecked methods.
-/// Most implementors should have a known size, even if their size is dynamic, provided that they have a reference
-/// the parent and any trees which they are members of.
-pub trait Bounded {
-    /// The full bounding-box with `x`, `y`, `width`, and `height` components for an implementor.
+/// This trait marks primitives and widgets that have a known size, or may have
+/// their size computed lazily granted that they have a valid reference to a parent
+/// and access to the tree that contains them.
+///
+/// Technically only [`Dimensioned::size()`] needs to be implemented as other provided methods
+/// delegate to this to provide their values, but it is recommended to override
+/// other methods if an implementor stores the required values differently.
+pub trait Dimensioned {
+    /// Returns a [`math::Size`] with the `width` and `height` fields for the bounding box
+    /// of an implementor.
+    fn size(&self) -> math::Size;
+
+    /// Returns the width of the implementor's bounding box.
     ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
-    fn rect(&self) -> math::Rect;
-
-    /// The checked and safe version of [`Bounded::rect()`], guaranteed to never panic and return
-    /// [`None`] in the event that the size of the implementor is unknown.
-    /// See the note for [`Bounded::size_checked()`].
-    fn rect_checked(&self) -> Option<math::Rect>;
-
-    /// The left X-axis of the bounding box for an implementor.
-    /// This is a convenience method and returns `self.position().x`.
-    fn x(&self) -> f32 {
-        self.position().x
-    }
-
-    /// The top Y-axis of the bounding box for an implementor.
-    /// This is a convenience method and returns `self.position().y`.
-    fn y(&self) -> f32 {
-        self.position().y
-    }
-
-    /// The upper-left point of the bounding box for an implementor.
-    fn position(&self) -> math::Point;
-
-    /// The width of the bounding box for an implementor.
-    /// This is a convenience method and maps to the interior `width` field of `Some(self.size())`.
-    ///
-    /// See the note for [`Bounded::size_checked()`].
-    fn width_checked(&self) -> Option<f32> {
-        self.size_checked().map(|size| size.width)
-    }
-
-    /// The height of the bounding box for an implementor.
-    /// This is a convenience method and maps to the interior `height` field of `Some(self.size())`.
-    ///
-    /// See the note for [`Bounded::size_checked()`].
-    fn height_checked(&self) -> Option<f32> {
-        self.size_checked().map(|size| size.height)
-    }
-
-    /// The width and height of the bounding box for an implementor.
-    /// If the size is unknown, or can only be known after a computation
-    /// triggered by a mutable method, this will return [`None`].
-    ///
-    /// **Note:**
-    /// > This should be used rather than [`Bounded::size()`] if the implementor does not know
-    /// > its own size until a later condition is met.
-    /// > An implementor may mark this method with [`unimplemented!()`] if it is not applicable.
-    fn size_checked(&self) -> Option<math::Size>;
-
-    /// The width of the bounding box for an implementor.
-    ///
-    /// See the note for [`Bounded::size()`].
+    /// By default this returns the `width` field of [`Dimensioned::size()`],
+    /// but an implementor may want to change this if they don't store an internal [`math::Size`].
     fn width(&self) -> f32 {
         self.size().width
     }
 
-    /// The height of the bounding box for an implementor.
+    /// Returns the height of the implementor's bounding box.
     ///
-    /// See the note for [`Bounded::size()`].
+    /// By default this returns the `height` field of [`Dimensioned::size()`],
+    /// but an implementor may want to change this if they don't store an internal [`math::Size`].
     fn height(&self) -> f32 {
         self.size().height
     }
+}
 
-    /// The width and height for the bounding box for an implementor.
+/// This trait marks primitives and widgets that have a position in screen-space.
+///
+/// Technically only [`Positioned::position()`] needs to be implemented as other provided methods
+/// delegate to this to provide their values, but it is recommended to override
+/// other methods if an implementor stores the required values differently.
+pub trait Positioned {
+    /// Returns a [`math::Point`] with the `x` and `y` coordinates for the bounding box
+    /// of an implementor. This will always be the top-left vertex/coordinate of
+    /// the implementor's bounding box.
+    fn position(&self) -> math::Point;
+
+    /// Returns the distance from the X-axis of the origin of the screen-space to the left-edge of the bounding box.
+    /// The origin of the screen-space is dependant on the surface that the implementor will be rendered to.
     ///
-    /// **Note:**
-    /// > This should be used rather than [`Bounded::size_checked()`] if the implementor
-    /// > has a fixed size or if the size can be computed upon initialization.
-    /// > An implementor may mark this method with [`unimplemented!()`] if it is not applicable.
-    /// >
-    /// > These restrictions apply to all methods of a [`Bounded`] type that rely on a known size.
-    /// > You may have to calculate any of these values manually with [`Bounded::size_checked()`].
-    fn size(&self) -> math::Size;
+    /// By default this returns the `x` field of [`Positioned::position()`],
+    /// but an implementor may want to change this if they don't store an internal [`math::Size`].
+    fn x(&self) -> f32 {
+        self.position().x
+    }
 
-    /// An alias for [`Bounded::y()`].
+    /// Returns the distance from the Y-axis of the origin of the screen-space to the top-edge of the bounding box.
+    /// The origin of the screen-space is dependant on the surface that the implementor will be rendered to.
+    ///
+    /// By default this returns the `y` field of [`Positioned::position()`],
+    /// but an implementor may want to change this if they don't store an internal [`math::Size`].
+    fn y(&self) -> f32 {
+        self.position().y
+    }
+}
+
+/// This trait marks types who implement [`Dimensioned`] and [`Positioned`], providing convenience
+/// methods for getting various properties of a widget or primitive's bounding box.
+/// It is automatically implemented for all types that have the two required traits.
+pub trait Bounded: Dimensioned + Positioned {
+    /// Returns a [`math::Rect`] with `x`, `y`, `width`, and `height` fields for the bounding box of an implementor.
+    /// If a type stores this information in a [`math::Rect`] already, it is recommended to override this and return
+    /// that to avoid unnecessary copies.
+    fn rect(&self) -> math::Rect {
+        math::rect(self.x(), self.y(), self.width(), self.height())
+    }
+
+    /// An alias to [`Positioned::x()`].
     fn left(&self) -> f32 {
         self.x()
     }
 
-    /// An alias for [`Bounded::x()`].
+    /// Returns the distance from the X-axis of the origin of the screen-space to the right-edge of the bounding box.
+    /// The origin of the screen-space is dependant on the surface that the implementor will be rendered to.
+    ///
+    /// See [`Positioned::x()`] and [`Dimensioned::width()`] for implementation details.
+    /// The default implementation is the sum of those two.
+    fn right(&self) -> f32 {
+        self.x() + self.width()
+    }
+
+    /// An alias to [`Positioned::y()`].
     fn top(&self) -> f32 {
         self.y()
     }
 
-    /// The right Y-axis of the bounding box for an implementor.
+    /// Returns the distance from the Y-axis of the origin of the screen-space to the bottom-edge of the bounding box.
+    /// The origin of the screen-space is dependant on the surface that the implementor will be rendered to.
     ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
-    fn right(&self) -> f32 {
-        self.left() + self.width()
-    }
-
-    /// The bottom X-axis of the bounding box for an implementor.
-    ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
+    /// See [`Positioned::y()`] and [`Dimensioned::height()`] for implementation details.
+    /// The default implementation is the sum of those two.
     fn bottom(&self) -> f32 {
-        self.top() + self.height()
+        self.y() + self.height()
     }
 
-    /// An alias for [`Bounded::position()`].
+    /// An alias to [`Positioned::position()`].
     fn top_left(&self) -> math::Point {
-        self.position()
+        math::point(self.left(), self.top())
     }
 
-    /// The upper-right point of the bounding box for an implementor.
-    ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
+    /// Returns the coordinates as a [`math::Point`] of the top-right vertex of the bounding box.
     fn top_right(&self) -> math::Point {
         math::point(self.right(), self.top())
     }
 
-    /// The bottom-left point of the bounding box for an implementor.
-    ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
+    /// Returns the coordinates as a [`math::Point`] of the bottom-left vertex of the bounding box.
     fn bottom_left(&self) -> math::Point {
-        math::point(self.left(), self.right())
+        math::point(self.left(), self.bottom())
     }
 
-    /// The bottom-right point of the bounding box for an implementor.
-    ///
-    /// **Note:**
-    /// > This will panic if the size of the implementor is unknown.
-    /// > See the note for [`Bounded::size()`].
+    /// Returns the coordinates as a [`math::Point`] of the bottom-right vertex of the bounding box.
     fn bottom_right(&self) -> math::Point {
         math::point(self.right(), self.bottom())
     }
 }
+
+impl<T> Bounded for T where T: Dimensioned + Positioned {}
 
 #[cfg(test)]
 mod tests {
