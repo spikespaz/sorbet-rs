@@ -18,11 +18,24 @@ use std::hash;
 
 use crate::types::*;
 
+/// This structure represents colors in the HSVA color space with
+/// hue, saturation, lightness and value channels.
+/// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/HSL_and_HSV>) for details.
+///
+/// If you don't need transparency, see [`types::Hsv`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsva {
+    /// Hue channel.
+    /// Ranged `0.0..360.0`.
     pub h: f64,
+    /// Saturation channel.
+    /// Ranged `0.0..1.0`.
     pub s: f64,
+    /// Value channel.
+    /// Ranged `0.0..1.0`.
     pub v: f64,
+    /// Alpha/transparency channel.
+    /// Ranged `0.0..1.0`.
     pub alpha: f64,
 }
 

@@ -18,11 +18,24 @@ use std::{fmt, hash};
 
 use crate::types::*;
 
+/// This structure represents colors in the RGBA color space with
+/// red, green, blue, and alpha channels..
+/// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/RGB_color_model>) for details.
+///
+/// If you don't need transparency, see [`types::Rgb`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgba {
+    /// Red channel.
+    /// Ranged `0.0..1.0`.
     pub r: f64,
+    /// Green channel.
+    /// Ranged `0.0..1.0`.
     pub g: f64,
+    /// Blue channel.
+    /// Ranged `0.0..1.0`.
     pub b: f64,
+    /// Alpha/transparency channel.
+    /// Ranged `0.0..1.0`.
     pub alpha: f64,
 }
 

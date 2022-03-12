@@ -18,10 +18,22 @@ use std::hash;
 
 use crate::types::*;
 
+/// This structure represents colors in the HSL color space with
+/// hue, saturation, and lightness channels.
+/// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/HSL_and_HSV>) for details.
+///
+/// This does not include the alpha/transparency component.
+/// If you need transparency, see [`types::Hsla`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsl {
+    /// Hue channel.
+    /// Ranged `0.0..360.0`.
     pub h: f64,
+    /// Saturation channel.
+    /// Ranged `0.0..1.0`.
     pub s: f64,
+    /// Lightness channel.
+    /// Ranged `0.0..1.0`.
     pub l: f64,
 }
 

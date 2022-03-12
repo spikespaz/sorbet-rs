@@ -14,11 +14,14 @@
     limitations under the License.
 */
 
-pub mod hsl;
-pub mod hsla;
-pub mod hsv;
-pub mod hsva;
-pub mod rgb;
-pub mod rgba;
+//! This module contains all of the structures for the color-spaces and formats supported by the crate.
+//! They are re-exported in the crate-root.
+
+mod hsl;
+mod hsla;
+mod hsv;
+mod hsva;
+mod rgb;
+mod rgba;
 
 pub use {hsl::*, hsla::*, hsv::*, hsva::*, rgb::*, rgba::*};

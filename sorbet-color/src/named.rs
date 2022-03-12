@@ -1,6 +1,15 @@
-//! Named colors are defined by the W3C CSS Color Module Level 4 Working Draft.
+#![allow(missing_docs)]
+
+//! This module contains named colors that are standard in CSS, defined by the
+//! [W3C CSS Color Module Level 4 Working Draft](https://www.w3.org/TR/css-color-4/#named-colors).
 //!
-//! <https://www.w3.org/TR/css-color-4/#named-colors>
+//! All constants here are a [`u32`], and in the source they use the `0x` prefix to
+//! denote hexadecimal notation with RGBA channels.
+//! If they are converted to a structure with an `alpha` component,
+//! the result will be completely opaque as the last 8 bits are `FF`.
+//!
+//! To get a color structure from it use the [`From<u32>`] implementation.
+//! Currently only [`types::Rgb`] and [`types::Rgba`] implement this.
 
 pub const ALICEBLUE: u32 = 0xF0F8FFFF;
 pub const ANTIQUEWHITE: u32 = 0xFAEBD7FF;

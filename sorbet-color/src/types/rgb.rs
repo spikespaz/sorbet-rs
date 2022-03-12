@@ -18,10 +18,22 @@ use std::{fmt, hash};
 
 use crate::types::*;
 
+/// This structure represents colors in the RGB color space with
+/// red, green, and blue channels.
+/// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/RGB_color_model>) for details.
+///
+/// This does not include the alpha/transparency component.
+/// If you need transparency, see [`types::Rgba`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgb {
+    /// Red channel.
+    /// Ranged `0.0..1.0`.
     pub r: f64,
+    /// Green channel.
+    /// Ranged `0.0..1.0`.
     pub g: f64,
+    /// Blue channel.
+    /// Ranged `0.0..1.0`.
     pub b: f64,
 }
 

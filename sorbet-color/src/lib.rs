@@ -14,6 +14,25 @@
     limitations under the License.
 */
 
+#![warn(missing_docs)]
+
+//! This crate provides convenient types to represent colors in different formats/models/spaces.
+//! All color structures have the [`Color`] trait which specifies bounds for conversion between
+//! every other color structure.
+//!
+//! The transparency/alpha component as structure fields is always fully spelled-out as `alpha`,
+//! to differentiate it from any color models that may have an `a` component
+//! (none handled by this library thus-far).
+//!
+//! Most of the mathematics used here will be based on the algorithms found on Wikipedia or
+//! other crowd-sourced references.
+//!
+//! This library is incomplete and is missing important spaces such as CIE XYZ, LUV, and LAB.
+//! If you would like to utilize this crate and there is a format missing, please
+//! [open a new issue on the GitHub repository](https://github.com/spikespaz/sorbet-rs).
+//!
+//! Pull requests are very welcome.
+
 pub mod named;
 pub mod types;
 
@@ -21,6 +40,9 @@ use std::{fmt, hash};
 
 pub use types::*;
 
+/// This trait marks structures that have the necessary [`From`] implementations for all other
+/// color spaces. It also provides several constructors that facilitate creating the appropriate
+/// values from known-formats such as hexadecimal notation or CSS-compatible functional notations.
 pub trait Color:
     Copy
     + Clone
