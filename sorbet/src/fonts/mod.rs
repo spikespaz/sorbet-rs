@@ -1,30 +1,16 @@
-use std::path::PathBuf;
+#[cfg_attr(target_os = "linux", path = "linux.rs")]
+#[cfg_attr(target_os = "windows", path = "windows.rs")]
+#[cfg_attr(target_os = "macos", path = "macos.rs")]
+mod platform;
+
+pub use platform::*;
 
 use thiserror::Error;
 
-#[cfg(target_os = "linux")]
-use fontconfig::Fontconfig;
-
 #[derive(Debug, Error)]
 pub enum Error {
-    #[cfg(target_os = "linux")]
     #[error("fontconfig could not be initialized")]
     FontconfigInit,
-}
-
-/// Locate a font on the filesystem by deferring to platform-specific APIs.
-pub fn locate_font<F, S>(family: F, style: Option<S>) -> Result<Option<PathBuf>, Error>
-where
-    F: AsRef<str>,
-    S: AsRef<str>,
-{
-    #[cfg(target_os = "linux")]
-    {
-        let config = Fontconfig::new().ok_or(Error::FontconfigInit)?;
-        Ok(config
-            .find(family.as_ref(), style.as_ref().map(S::as_ref))
-            .map(|font| font.path))
-    }
 }
 
 #[cfg(test)]
