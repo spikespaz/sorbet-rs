@@ -1,3 +1,9 @@
+//! Provides useful functions and types for working with fonts on various platforms.
+//!
+//! Generally members here should work on every platform (Linux, Windows, and macOS) without headache,
+//! and return a common [`enum@Error`] with variants that may not necessarily need to be handled on every platform.
+//! This is done to eliminate the need for callee-code to handle platform specific situations with `#[cfg(...)]`.
+
 #[cfg_attr(target_os = "linux", path = "linux.rs")]
 #[cfg_attr(target_os = "windows", path = "windows.rs")]
 #[cfg_attr(target_os = "macos", path = "macos.rs")]
@@ -7,8 +13,12 @@ pub use platform::*;
 
 use thiserror::Error;
 
+/// The common error type returned from methods in this module. This contains variants that can result from any platform;
+/// if your application does not work on all three major platforms, you may use `_ => unimplemented!()` when matching.
 #[derive(Debug, Error)]
 pub enum Error {
+    /// On Linux, there is a dependency to `fontconfig`. If it is not found or failed in some other way,
+    /// this variant will be used. This is used in the event that [`fontconfig::Fontconfig::new()`] returns [`None`].
     #[error("fontconfig could not be initialized")]
     FontconfigInit,
 }
