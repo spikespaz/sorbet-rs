@@ -1,8 +1,7 @@
 pub mod fonts;
 
-pub mod math {
-    pub use lyon::math::*;
-}
+/// Re-exported from [`lyon::math`], all types here use [`f32`] with the default [`euclid::UnknownUnit`] unit.
+pub use lyon::math;
 
 /// This trait marks primitives and widgets that have a known size, or may have
 /// their size computed lazily granted that they have a valid reference to a parent
