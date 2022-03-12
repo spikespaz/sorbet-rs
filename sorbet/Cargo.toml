@@ -7,9 +7,9 @@ edition = "2021"
 
 [dependencies]
 thiserror = "1"
-# winit = "0.26"
-# wgpu = "0.12"
+wgpu = "0.12"
 lyon = "0.17"
+winit = "0.26"
 sorbet-color = { path = "../sorbet-color", features = ["wgpu"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
