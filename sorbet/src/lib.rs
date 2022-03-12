@@ -1,5 +1,8 @@
 pub mod fonts;
 
+#[doc(inline)]
+pub use sorbet_color as color;
+
 /// Re-exported from [`lyon::math`], all types here use [`f32`] with the default [`euclid::UnknownUnit`] unit.
 pub use lyon::math;
 
