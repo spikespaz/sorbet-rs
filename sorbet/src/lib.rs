@@ -104,7 +104,7 @@ pub trait Bounded: Dimensioned + Positioned {
 
     /// An alias to [`Positioned::position()`].
     fn top_left(&self) -> math::Point {
-        math::point(self.left(), self.top())
+        self.position()
     }
 
     /// Returns the coordinates as a [`math::Point`] of the top-right vertex of the bounding box.
