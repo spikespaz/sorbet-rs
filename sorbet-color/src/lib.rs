@@ -33,12 +33,45 @@
 //!
 //! Pull requests are very welcome.
 
+use thiserror::Error;
+
 pub mod named;
 pub mod types;
 
-use std::{fmt, hash};
+use std::{fmt, hash, str::FromStr};
 
 pub use types::*;
+
+/// Variants of this enum are used when the [`Color::new`] constructor fails to parse an input string.
+/// View the source code for the descriptions of these variants.
+#[allow(missing_docs)]
+#[derive(Clone, Debug, Error)]
+pub enum Error {
+    #[error(
+        "the input string was prefixed with a pound but was not either six or eight characters"
+    )]
+    InvalidHexLength,
+    #[error("the input string was prefixed with a pound but had characters outside of hexadecimal range")]
+    InvalidHexChars,
+    #[error("the input string began with a format identifier but was missing parenthesis")]
+    MissingParenthesis,
+    #[error(
+        "the input string had a segment that was assumed to be an integer but failed to parse"
+    )]
+    InvalidCssInteger,
+    #[error(
+        "the input string had a segment that contained a full-stop but failed to parse as a float"
+    )]
+    InvalidCssFloat,
+    #[error("the input string ended with a percent symbol but failed to parse as an integer")]
+    InvalidCssPercentage,
+    #[error("the input string was assumed to be CSS functional notation but did not the correct number of values")]
+    InvalidCssParameters,
+    #[error("the input string did not match any known format")]
+    UnknownFormat,
+}
+
+type Result<T> = std::result::Result<T, Error>;
 
 /// This trait marks structures that have the necessary [`From`] implementations for all other
 /// color spaces. It also provides several constructors that facilitate creating the appropriate
@@ -57,15 +90,207 @@ pub trait Color:
     + From<Hsl>
     + From<Hsla>
 {
-    fn new(string: &str) -> Self {
-        let string = string.strip_prefix('#').unwrap_or(string);
+    /// This constructor takes a CSS-compatible functional notation for a color, and coerces it to an
+    /// explicit or inferred type. This will return [`enum@Error`] variants if the parsing fails.
+    ///
+    /// Spaces are ignored but other whitespace is not.
+    /// When providing a hexadecimal color, the `#` prefix is required, whereas the unchecked
+    /// [`From<&str>`] on [`Rgb`] and [`Rgba`] has no such restriction.
+    ///
+    /// Note that if any parameters inside the string are not within a channel's valid range,
+    /// they will be clamped instead of wrapped.
+    ///
+    /// See the [reference on W3 Schools](https://www.w3schools.com/cssref/css_colors_legal.asp)
+    /// for valid input strings. Current supported prefixes match the type names for color structures
+    /// supported by this crate.
+    fn new<S>(string: S) -> Result<Self>
+    where
+        S: AsRef<str>,
+    {
+        let string = string.as_ref().replace(' ', "").to_ascii_lowercase();
 
-        if string.len() == 6 {
-            Self::from(Rgb::from(string))
-        } else if string.len() == 8 {
-            Self::from(Rgba::from(string))
+        if let Some(string) = string.strip_prefix('#') {
+            if !string.bytes().all(|b| b.is_ascii_hexdigit()) {
+                Err(Error::InvalidHexChars)
+            } else if string.len() == 6 {
+                Ok(Rgb::from(string).into())
+            } else if string.len() == 8 {
+                Ok(Rgba::from(string).into())
+            } else {
+                Err(Error::InvalidHexLength)
+            }
+        } else if let Some(string) = string.strip_prefix("rgb") {
+            Ok(Rgb::try_from(parse_css_parts(string)?.as_slice())?.into())
+        } else if let Some(string) = string.strip_prefix("rgba") {
+            Ok(Rgba::try_from(parse_css_parts(string)?.as_slice())?.into())
+        } else if let Some(string) = string.strip_prefix("hsv") {
+            Ok(Hsv::try_from(parse_css_parts(string)?.as_slice())?.into())
+        } else if let Some(string) = string.strip_prefix("hsva") {
+            Ok(Hsva::try_from(parse_css_parts(string)?.as_slice())?.into())
+        } else if let Some(string) = string.strip_prefix("hsl") {
+            Ok(Hsl::try_from(parse_css_parts(string)?.as_slice())?.into())
+        } else if let Some(string) = string.strip_prefix("hsla") {
+            Ok(Hsla::try_from(parse_css_parts(string)?.as_slice())?.into())
         } else {
-            panic!("provided string must have 6 or 8 hexadecimal digits");
+            Err(Error::UnknownFormat)
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+enum CssNumber {
+    Integer(i8),
+    Float(f64),
+    Percentage(f64),
+}
+
+impl CssNumber {
+    fn to_degrees(&self) -> f64 {
+        match *self {
+            CssNumber::Integer(integer) => integer.into(),
+            CssNumber::Float(float) => float,
+            CssNumber::Percentage(percentage) => percentage * 360.0,
+        }
+    }
+}
+
+fn parse_css_parts(string: &str) -> Result<Vec<CssNumber>> {
+    if let Some(string) = string.strip_prefix('(').and_then(|s| s.strip_suffix(')')) {
+        string
+            .split(',')
+            .into_iter()
+            .map(CssNumber::from_str)
+            .collect()
+    } else {
+        Err(Error::MissingParenthesis)
+    }
+}
+
+impl FromStr for CssNumber {
+    type Err = Error;
+
+    fn from_str(string: &str) -> Result<Self> {
+        Ok(if let Some(string) = string.strip_suffix('%') {
+            Self::Percentage(string.parse().or(Err(Error::InvalidCssPercentage))?)
+        } else if string.contains('.') {
+            Self::Float(string.parse().or(Err(Error::InvalidCssFloat))?)
+        } else {
+            Self::Integer(string.parse().or(Err(Error::InvalidCssInteger))?)
+        })
+    }
+}
+
+impl From<CssNumber> for f64 {
+    fn from(other: CssNumber) -> f64 {
+        match other {
+            CssNumber::Integer(integer) => (integer as f64) / 255.0,
+            CssNumber::Float(float) => float / 255.0,
+            CssNumber::Percentage(percentage) => percentage / 100.0,
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Rgb {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Rgb> {
+        if other.len() != 3 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            Ok(Rgb {
+                r: f64::clamp((*other.get(0).unwrap()).into(), 0.0, 1.0),
+                g: f64::clamp((*other.get(1).unwrap()).into(), 0.0, 1.0),
+                b: f64::clamp((*other.get(2).unwrap()).into(), 0.0, 1.0),
+            })
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Rgba {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Rgba> {
+        if other.len() != 4 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            let Rgb { r, g, b } = Rgb::try_from(&other[0..3])?;
+
+            Ok(Rgba {
+                r,
+                g,
+                b,
+                alpha: f64::clamp((*other.get(3).unwrap()).into(), 0.0, 1.0),
+            })
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Hsv {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Hsv> {
+        if other.len() != 3 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            Ok(Hsv {
+                h: f64::clamp(other.get(0).unwrap().to_degrees(), 0.0, 360.0),
+                s: f64::clamp((*other.get(1).unwrap()).into(), 0.0, 1.0),
+                v: f64::clamp((*other.get(2).unwrap()).into(), 0.0, 1.0),
+            })
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Hsva {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Hsva> {
+        if other.len() != 4 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            let Hsv { h, s, v } = Hsv::try_from(&other[0..3])?;
+
+            Ok(Hsva {
+                h,
+                s,
+                v,
+                alpha: f64::clamp((*other.get(3).unwrap()).into(), 0.0, 1.0),
+            })
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Hsl {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Hsl> {
+        if other.len() != 3 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            Ok(Hsl {
+                h: f64::clamp(other.get(0).unwrap().to_degrees(), 0.0, 360.0),
+                s: f64::clamp((*other.get(1).unwrap()).into(), 0.0, 1.0),
+                l: f64::clamp((*other.get(2).unwrap()).into(), 0.0, 1.0),
+            })
+        }
+    }
+}
+
+impl TryFrom<&[CssNumber]> for Hsla {
+    type Error = Error;
+
+    fn try_from(other: &[CssNumber]) -> Result<Hsla> {
+        if other.len() != 4 {
+            Err(Error::InvalidCssParameters)
+        } else {
+            let Hsl { h, s, l } = Hsl::try_from(&other[0..3])?;
+
+            Ok(Hsla {
+                h,
+                s,
+                l,
+                alpha: f64::clamp((*other.get(3).unwrap()).into(), 0.0, 1.0),
+            })
         }
     }
 }
