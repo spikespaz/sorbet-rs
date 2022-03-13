@@ -37,13 +37,13 @@
 //!
 //! Pull requests are very welcome.
 
-use thiserror::Error;
-
+pub mod css;
 pub mod named;
 pub mod types;
 
 use std::{fmt, hash, str::FromStr};
 
+use css::*;
 pub use types::*;
 
 /// Variants of this enum are used when the [`Color::new`] constructor fails to parse an input string.
