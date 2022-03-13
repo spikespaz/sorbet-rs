@@ -1,3 +1,8 @@
+#![warn(missing_docs)]
+
+//! The main crate for creating a [`Window`], drawing [`Primitive`]s to the screen, and handling [`Event`]s.
+//! Each member of this top-level module has useful documentation and implementation specifics that you should look into.
+
 pub mod fonts;
 
 #[doc(inline)]

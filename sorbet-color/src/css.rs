@@ -34,17 +34,17 @@ pub enum Error {
     #[error("the input string was prefixed with a pound but had characters outside of hexadecimal range")]
     InvalidHexChars,
     #[error("the input string began with a format identifier but was missing parenthesis")]
-    MissingParenthesis,
+    MissingCssParens,
     #[error(
         "the input string had a segment that was assumed to be an integer but failed to parse"
     )]
     InvalidCssFloat,
-    #[error("the input string ended with a percent symbol but failed to parse as an integer")]
+    #[error("the input string had a number that ended with a percent symbol but failed to parse as a float")]
     InvalidCssPercent,
     #[error("the input string was assumed to be CSS functional notation but did not the correct number of values")]
-    InvalidCssParameters,
-    #[error("the input string did not match any known format")]
-    UnknownFormat,
+    InvalidCssParams,
+    #[error("the input string had a prefix indicating a format that is not supported")]
+    UnknownCssFormat,
 }
 
 /// The [`std::result::Result`] alias returned from parsing operations from this module.
@@ -70,6 +70,34 @@ pub enum CssNumber {
     Float(f64),
 }
 
+/// This enumerable represents the names of the CSS color functions supported by the crate.
+#[allow(missing_docs)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, strum::EnumString, strum::Display)]
+#[strum(serialize_all = "snake_case")]
+pub enum CssColorType {
+    Rgb,
+    Rgba,
+    Hsv,
+    Hsva,
+    Hsl,
+    Hsla,
+}
+
+/// This structure is what CSS color functions will be parsed into.
+/// It is an intermediate step between the CSS string and, for example, [`crate::Rgba`].
+#[derive(Clone, Debug)]
+pub struct CssColorNotation {
+    /// See the documentation on the type itself.
+    pub format: CssColorType,
+    /// The length of this vector is going to be either three or four, depending on
+    /// whether or not the color format has an alpha/transparency channel.
+    ///
+    /// These values are either going to be a percentage/multiplier,
+    /// or a float with an undefined range.
+    /// See the documentation on the type itself.
+    pub values: Vec<CssNumber>,
+}
+
 /// With [`ToString`] and [`std::fmt::Display`], [`float_to_nice_string`] is used internally.
 /// See the documentation for that function to see the representation that you will receive.
 ///
@@ -92,6 +120,47 @@ impl FromStr for CssNumber {
         } else {
             Self::Float(string.parse().or(Err(Error::InvalidCssFloat))?)
         })
+    }
+}
+
+impl std::fmt::Display for CssColorNotation {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str(&format!(
+            "{}({})",
+            self.format,
+            self.values
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
+        ))
+    }
+}
+
+impl FromStr for CssColorNotation {
+    type Err = Error;
+
+    fn from_str(string: &str) -> Result<Self> {
+        let string = string.replace(' ', "");
+        let (format, mut values) = string.split_once('(').ok_or(Error::MissingCssParens)?;
+        values = values.strip_suffix(')').ok_or(Error::MissingCssParens)?;
+
+        let format = CssColorType::from_str(format).or(Err(Error::UnknownCssFormat))?;
+        let values = values
+            .split(',')
+            .map(CssNumber::from_str)
+            .collect::<Result<Vec<_>>>()?;
+
+        if values.len()
+            != match format {
+                CssColorType::Rgb | CssColorType::Hsv | CssColorType::Hsl => 3,
+                CssColorType::Rgba | CssColorType::Hsva | CssColorType::Hsla => 4,
+            }
+        {
+            Err(Error::InvalidCssParams)
+        } else {
+            Ok(Self { format, values })
+        }
     }
 }
 
