@@ -113,6 +113,9 @@ impl From<Rgb> for [f64; 3] {
 }
 
 impl From<&str> for Rgb {
+    /// Takes a hexadecimal string optionally prefixed with a `#` and returns an [`Rgb`] structure.
+    /// The input is unchecked and will panic if the input has invalid hexadecimal characters.
+    /// For a more robust constructor that won't panic, see [`crate::Color::new`].
     fn from(string: &str) -> Self {
         let string = string.strip_prefix('#').unwrap_or(string);
 

@@ -120,6 +120,9 @@ impl From<Rgba> for [f64; 4] {
 }
 
 impl From<&str> for Rgba {
+    /// Takes a hexadecimal string optionally prefixed with a `#` and returns an [`Rgba`] structure.
+    /// The input is unchecked and will panic if the input has invalid hexadecimal characters.
+    /// For a more robust constructor that won't panic, see [`crate::Color::new`].
     fn from(string: &str) -> Self {
         let string = string.strip_prefix('#').unwrap_or(string);
 
