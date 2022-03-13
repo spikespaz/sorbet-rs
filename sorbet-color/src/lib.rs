@@ -28,6 +28,10 @@
 //! other crowd-sourced references.
 //!
 //! This library is incomplete and is missing important spaces such as CIE XYZ, LUV, and LAB.
+//!
+//! Some interesting reading about the
+//! [CIE 1931 color space can be found on Wikipedia](https://en.wikipedia.org/wiki/CIE_1931_color_space).
+//!
 //! If you would like to utilize this crate and there is a format missing, please
 //! [open a new issue on the GitHub repository](https://github.com/spikespaz/sorbet-rs).
 //!
