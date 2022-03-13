@@ -23,7 +23,7 @@ use crate::types::*;
 /// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/RGB_color_model>) for details.
 ///
 /// This does not include the alpha/transparency component.
-/// If you need transparency, see [`types::Rgba`].
+/// If you need transparency, see [`crate::types::Rgba`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rgb {
     /// Red channel.

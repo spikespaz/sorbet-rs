@@ -23,7 +23,7 @@ use crate::types::*;
 /// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/HSL_and_HSV>) for details.
 ///
 /// This does not include the alpha/transparency component.
-/// If you need transparency, see [`types::Hsva`].
+/// If you need transparency, see [`crate::types::Hsva`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsv {
     /// Hue channel.

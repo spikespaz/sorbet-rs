@@ -22,7 +22,7 @@ use crate::types::*;
 /// hue, saturation, lightness and alpha channels.
 /// See the [Wikipedia reference](<https://en.wikipedia.org/wiki/HSL_and_HSV>) for details.
 ///
-/// If you don't need transparency, see [`types::Hsl`].
+/// If you don't need transparency, see [`crate::types::Hsl`].
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Hsla {
     /// Hue channel.
