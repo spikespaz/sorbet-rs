@@ -116,9 +116,17 @@ impl FromStr for CssNumber {
 
     fn from_str(string: &str) -> Result<Self> {
         Ok(if let Some(string) = string.strip_suffix('%') {
-            Self::Percent(string.parse::<f64>().or(Err(Error::InvalidCssPercent))? / 100.0)
+            Self::Percent(f64::clamp(
+                string.parse::<f64>().or(Err(Error::InvalidCssPercent))? / 100.0,
+                0.0,
+                1.0,
+            ))
         } else {
-            Self::Float(string.parse().or(Err(Error::InvalidCssFloat))?)
+            Self::Float(f64::clamp(
+                string.parse().or(Err(Error::InvalidCssFloat))?,
+                0.0,
+                1.0,
+            ))
         })
     }
 }
