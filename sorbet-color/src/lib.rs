@@ -41,9 +41,6 @@ pub mod css;
 pub mod named;
 pub mod types;
 
-use std::{fmt, hash};
-
-use css::*;
 pub use types::*;
 
 /// This trait marks structures that have the necessary [`From`] implementations for all other
@@ -52,10 +49,10 @@ pub use types::*;
 pub trait Color:
     Copy
     + Clone
-    + fmt::Debug
+    + std::fmt::Debug
     + PartialEq
     + Eq
-    + hash::Hash
+    + std::hash::Hash
     + From<Rgb>
     + From<Rgba>
     + From<Hsv>
@@ -64,7 +61,7 @@ pub trait Color:
     + From<Hsla>
 {
     /// This constructor takes a CSS-compatible functional notation for a color, and coerces it to an
-    /// explicit or inferred type. This will return [`enum@Error`] variants if the parsing fails.
+    /// explicit or inferred type. This will return [`css::Error`] variants if the parsing fails.
     ///
     /// Spaces are ignored but other whitespace is not.
     /// When providing a hexadecimal color, the `#` prefix is required, whereas the unchecked
@@ -76,7 +73,7 @@ pub trait Color:
     /// See the [reference on W3 Schools](https://www.w3schools.com/cssref/css_colors_legal.asp)
     /// for valid input strings. Current supported prefixes match the type names for color structures
     /// supported by this crate.
-    fn new<S>(string: S) -> Result<Self>
+    fn new<S>(string: S) -> css::Result<Self>
     where
         S: AsRef<str>,
     {
@@ -84,28 +81,31 @@ pub trait Color:
 
         if let Some(string) = string.strip_prefix('#') {
             if !string.bytes().all(|b| b.is_ascii_hexdigit()) {
-                Err(Error::InvalidHexChars)
+                Err(css::Error::InvalidHexChars)
             } else if string.len() == 6 {
                 Ok(Rgb::from(string).into())
             } else if string.len() == 8 {
                 Ok(Rgba::from(string).into())
             } else {
-                Err(Error::InvalidHexLength)
+                Err(css::Error::InvalidHexLength)
             }
-        } else if let Some(string) = string.strip_prefix("rgb") {
-            todo!()
-        } else if let Some(string) = string.strip_prefix("rgba") {
-            todo!()
-        } else if let Some(string) = string.strip_prefix("hsv") {
-            todo!()
-        } else if let Some(string) = string.strip_prefix("hsva") {
-            todo!()
-        } else if let Some(string) = string.strip_prefix("hsl") {
-            todo!()
-        } else if let Some(string) = string.strip_prefix("hsla") {
-            todo!()
         } else {
-            Err(Error::UnknownFormat)
+            // Here we don't just parse the string and use the [`Self::TryFrom`] implimentation
+            // directly because that may use the wrong one and throw an error.
+            // For example, when the string is parsed as [`css::CssColorType::Rgb`] and `Self`
+            // is [`Hsv`], there would be an error because [`Hsv`] doesn't have the ability to
+            // take [`css::CssColorType::Rgb`].
+
+            let interm = string.parse::<css::CssColorNotation>()?;
+
+            Ok(match interm.format {
+                css::CssColorType::Rgb => Rgb::try_from(&interm)?.into(),
+                css::CssColorType::Rgba => Rgba::try_from(&interm)?.into(),
+                css::CssColorType::Hsv => Hsv::try_from(&interm)?.into(),
+                css::CssColorType::Hsva => Hsva::try_from(&interm)?.into(),
+                css::CssColorType::Hsl => Hsl::try_from(&interm)?.into(),
+                css::CssColorType::Hsla => Hsla::try_from(&interm)?.into(),
+            })
         }
     }
 
@@ -116,18 +116,6 @@ pub trait Color:
         Rgba::from(int).into()
     }
 }
-
-// fn parse_css_parts(string: &str) -> Result<Vec<CssNumber>> {
-//     if let Some(string) = string.strip_prefix('(').and_then(|s| s.strip_suffix(')')) {
-//         string
-//             .split(',')
-//             .into_iter()
-//             .map(CssNumber::from_str)
-//             .collect()
-//     } else {
-//         Err(Error::MissingParenthesis)
-//     }
-// }
 
 impl Color for Rgb {}
 impl Color for Rgba {}
