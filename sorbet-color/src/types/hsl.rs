@@ -16,7 +16,7 @@
 
 use std::hash;
 
-use crate::types::*;
+use crate::{css, types::*};
 
 /// This structure represents colors in the HSL color space with
 /// hue, saturation, and lightness channels.
@@ -134,5 +134,43 @@ impl From<Hsla> for Hsl {
 impl From<Hsva> for Hsl {
     fn from(other: Hsva) -> Self {
         Self::from(Hsv::from(other))
+    }
+}
+
+//
+// Implement to/from CssColorNotation
+//
+
+impl TryFrom<&css::CssColorNotation> for Hsl {
+    type Error = css::Error;
+
+    fn try_from(other: &css::CssColorNotation) -> css::Result<Self> {
+        match other.format {
+            css::CssColorType::Hsl | css::CssColorType::Hsla => Ok(Self {
+                h: css::css_number_to_float(
+                    other.values.get(0).ok_or(css::Error::InvalidCssParams)?,
+                ) * 360.0,
+                s: css::css_number_to_float(
+                    other.values.get(1).ok_or(css::Error::InvalidCssParams)?,
+                ),
+                l: css::css_number_to_float(
+                    other.values.get(2).ok_or(css::Error::InvalidCssParams)?,
+                ),
+            }),
+            _ => Err(css::Error::WrongCssFormat),
+        }
+    }
+}
+
+impl From<Hsl> for css::CssColorNotation {
+    fn from(other: Hsl) -> Self {
+        Self {
+            format: css::CssColorType::Hsv,
+            values: vec![
+                css::CssNumber::Float(other.h),
+                css::CssNumber::Percent(other.s),
+                css::CssNumber::Percent(other.l),
+            ],
+        }
     }
 }

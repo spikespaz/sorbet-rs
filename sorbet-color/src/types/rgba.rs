@@ -16,7 +16,7 @@
 
 use std::{fmt, hash};
 
-use crate::types::*;
+use crate::{css, types::*};
 
 /// This structure represents colors in the RGBA color space with
 /// red, green, blue, and alpha channels..
@@ -187,6 +187,44 @@ impl From<Hsla> for Rgba {
             g,
             b,
             alpha: other.alpha,
+        }
+    }
+}
+
+//
+// Implement to/from CssColorNotation
+//
+
+impl TryFrom<&css::CssColorNotation> for Rgba {
+    type Error = css::Error;
+
+    fn try_from(other: &css::CssColorNotation) -> css::Result<Self> {
+        match other.format {
+            css::CssColorType::Rgb => Ok(Self::from(Rgb::try_from(other)?)),
+            css::CssColorType::Rgba => {
+                let mut this = Self::from(Rgb::try_from(other)?);
+
+                this.alpha = css::css_number_to_float(
+                    other.values.get(3).ok_or(css::Error::InvalidCssParams)?,
+                );
+
+                Ok(this)
+            }
+            _ => Err(css::Error::WrongCssFormat),
+        }
+    }
+}
+
+impl From<Rgba> for css::CssColorNotation {
+    fn from(other: Rgba) -> Self {
+        Self {
+            format: css::CssColorType::Rgba,
+            values: vec![
+                css::CssNumber::Float(other.r * 255.0),
+                css::CssNumber::Float(other.g * 255.0),
+                css::CssNumber::Float(other.b * 255.0),
+                css::CssNumber::Percent(other.alpha),
+            ],
         }
     }
 }

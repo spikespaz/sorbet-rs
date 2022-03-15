@@ -16,7 +16,7 @@
 
 use std::hash;
 
-use crate::types::*;
+use crate::{css, types::*};
 
 /// This structure represents colors in the HSVA color space with
 /// hue, saturation, lightness and value channels.
@@ -121,6 +121,44 @@ impl From<Hsla> for Hsva {
             s,
             v,
             alpha: other.alpha,
+        }
+    }
+}
+
+//
+// Implement to/from CssColorNotation
+//
+
+impl TryFrom<&css::CssColorNotation> for Hsva {
+    type Error = css::Error;
+
+    fn try_from(other: &css::CssColorNotation) -> css::Result<Self> {
+        match other.format {
+            css::CssColorType::Hsv => Ok(Self::from(Hsv::try_from(other)?)),
+            css::CssColorType::Hsva => {
+                let mut this = Self::from(Hsv::try_from(other)?);
+
+                this.alpha = css::css_number_to_float(
+                    other.values.get(3).ok_or(css::Error::InvalidCssParams)?,
+                );
+
+                Ok(this)
+            }
+            _ => Err(css::Error::WrongCssFormat),
+        }
+    }
+}
+
+impl From<Hsva> for css::CssColorNotation {
+    fn from(other: Hsva) -> Self {
+        Self {
+            format: css::CssColorType::Hsva,
+            values: vec![
+                css::CssNumber::Float(other.h),
+                css::CssNumber::Percent(other.s),
+                css::CssNumber::Percent(other.v),
+                css::CssNumber::Percent(other.alpha),
+            ],
         }
     }
 }

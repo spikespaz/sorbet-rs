@@ -43,6 +43,8 @@ pub enum Error {
     InvalidCssPercent,
     #[error("the input string was assumed to be CSS functional notation but did not the correct number of values")]
     InvalidCssParams,
+    #[error("tried to parse into a color structure but failed because the input string had the wrong format")]
+    WrongCssFormat,
     #[error("the input string had a prefix indicating a format that is not supported")]
     UnknownCssFormat,
 }
@@ -180,4 +182,18 @@ pub fn float_to_nice_string(float: f64) -> String {
     string.truncate(string.trim_end_matches('0').trim_end_matches('.').len());
 
     string
+}
+
+pub(crate) fn css_number_to_rgb_channel(number: &CssNumber) -> f64 {
+    match *number {
+        CssNumber::Percent(percent) => percent,
+        CssNumber::Float(float) => float / 255.0,
+    }
+}
+
+pub(crate) fn css_number_to_float(number: &CssNumber) -> f64 {
+    match *number {
+        CssNumber::Percent(percent) => percent,
+        CssNumber::Float(float) => float,
+    }
 }

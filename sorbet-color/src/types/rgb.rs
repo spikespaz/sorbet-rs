@@ -16,7 +16,7 @@
 
 use std::{fmt, hash};
 
-use crate::types::*;
+use crate::{css, types::*};
 
 /// This structure represents colors in the RGB color space with
 /// red, green, and blue channels.
@@ -182,6 +182,44 @@ impl From<Hsva> for Rgb {
 impl From<Hsla> for Rgb {
     fn from(other: Hsla) -> Self {
         Self::from(Hsl::from(other))
+    }
+}
+
+//
+// Implement to/from CssColorNotation
+//
+
+impl TryFrom<&css::CssColorNotation> for Rgb {
+    type Error = css::Error;
+
+    fn try_from(other: &css::CssColorNotation) -> css::Result<Self> {
+        match other.format {
+            css::CssColorType::Rgb | css::CssColorType::Rgba => Ok(Self {
+                r: css::css_number_to_rgb_channel(
+                    other.values.get(0).ok_or(css::Error::InvalidCssParams)?,
+                ),
+                g: css::css_number_to_rgb_channel(
+                    other.values.get(1).ok_or(css::Error::InvalidCssParams)?,
+                ),
+                b: css::css_number_to_rgb_channel(
+                    other.values.get(2).ok_or(css::Error::InvalidCssParams)?,
+                ),
+            }),
+            _ => Err(css::Error::WrongCssFormat),
+        }
+    }
+}
+
+impl From<Rgb> for css::CssColorNotation {
+    fn from(other: Rgb) -> Self {
+        Self {
+            format: css::CssColorType::Rgb,
+            values: vec![
+                css::CssNumber::Float(other.r * 255.0),
+                css::CssNumber::Float(other.g * 255.0),
+                css::CssNumber::Float(other.b * 255.0),
+            ],
+        }
     }
 }
 
