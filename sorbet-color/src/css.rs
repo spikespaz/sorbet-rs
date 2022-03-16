@@ -87,7 +87,7 @@ pub enum CssColorType {
 
 /// This structure is what CSS color functions will be parsed into.
 /// It is an intermediate step between the CSS string and, for example, [`crate::Rgba`].
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CssColorNotation {
     /// See the documentation on the type itself.
     pub format: CssColorType,
