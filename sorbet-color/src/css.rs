@@ -106,10 +106,12 @@ pub struct CssColorNotation {
 /// When the value is a [`CssNumber::Percent`] you will receive a number in the range `0.0..100.0`.
 impl std::fmt::Display for CssNumber {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str(&match *self {
-            Self::Percent(percent) => format!("{}%", float_to_nice_string(percent * 100.0)),
-            Self::Float(float) => float_to_nice_string(float),
-        })
+        match *self {
+            Self::Percent(percent) => {
+                formatter.write_fmt(format_args!("{}%", float_to_nice_string(percent * 100.0)))
+            }
+            Self::Float(float) => formatter.write_str(&float_to_nice_string(float)),
+        }
     }
 }
 
@@ -127,7 +129,7 @@ impl FromStr for CssNumber {
 
 impl std::fmt::Display for CssColorNotation {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str(&format!(
+        formatter.write_fmt(format_args!(
             "{}({})",
             self.format,
             self.values
@@ -170,9 +172,7 @@ impl FromStr for CssColorNotation {
 /// if the rounded decimal is zero, it is truncated entirely.
 pub fn float_to_nice_string(float: f64) -> String {
     let mut string = format!("{:.3}", float);
-
     string.truncate(string.trim_end_matches('0').trim_end_matches('.').len());
-
     string
 }
 
