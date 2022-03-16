@@ -20,3 +20,4 @@ wgpu = { version = "0.12", optional = true }
 
 [dev-dependencies]
 once_cell = "1.9"
+test-case = "2"

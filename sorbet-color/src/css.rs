@@ -189,3 +189,26 @@ pub(crate) fn css_number_to_float(number: &CssNumber) -> f64 {
         CssNumber::Float(float) => float,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use test_case::test_case;
+
+    use super::*;
+
+    // Demonstrates that the decimal will be removed if the float is rational
+    #[test_case(99.0 => "99")]
+    // Demonstrates that the decimal will be preserved the float is irrational
+    #[test_case(99.9 => "99.9")]
+    // Demonstrates that decimals up to the thousandths will be preserved
+    #[test_case(99.999 => "99.999")]
+    // Demonstrates that decimals with a higher precision than thousandths will be rounded
+    #[test_case(99.9994 => "99.999")]
+    // Ignored due to a floating-point rounding error (should round up)
+    #[test_case(99.9995 => ignore "100")]
+    // This is the next value in the thousandths place that does not have the rounding error
+    #[test_case(99.9996 => "100")]
+    fn test_float_to_nice_string(float: f64) -> String {
+        float_to_nice_string(float)
+    }
+}
