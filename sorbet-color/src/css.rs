@@ -211,4 +211,38 @@ mod tests {
     fn test_float_to_nice_string(float: f64) -> String {
         float_to_nice_string(float)
     }
+
+    // Demonstrates that parsing numbers as float works
+    #[test_case("99" => CssNumber::Float(99.0))]
+    #[test_case("101.1" => CssNumber::Float(101.1))]
+    // Demonstrates that zeros before the decimal are not trimmed
+    #[test_case("100" => CssNumber::Float(100.0))]
+    // Demonstrates that parsing numbers as percent works
+    #[test_case("99%" => CssNumber::Percent(0.99))]
+    // Demonstrates that the hundredths decimal is preserved
+    #[test_case("99.5%" => CssNumber::Percent(0.995))]
+    // Ignored because this causes a rounding error and that is inconsequential
+    #[test_case("99.9%" => ignore CssNumber::Percent(0.999))]
+    fn test_parse_css_number(string: &str) -> CssNumber {
+        string.parse::<CssNumber>().unwrap()
+    }
+
+    // Repeat tests from [`test_float_to_nice_string`]
+    #[test_case(&CssNumber::Float(99.0) => "99")]
+    #[test_case(&CssNumber::Float(99.9) => "99.9")]
+    #[test_case(&CssNumber::Float(99.999) => "99.999")]
+    #[test_case(&CssNumber::Float(99.9994) => "99.999")]
+    #[test_case(&CssNumber::Float(99.9995) => ignore "100")]
+    #[test_case(&CssNumber::Float(99.9996) => "100")]
+    // Repeat the same tests but for percents
+    #[test_case(&CssNumber::Percent(0.990) => "99%")]
+    #[test_case(&CssNumber::Percent(0.999) => "99.9%")]
+    #[test_case(&CssNumber::Percent(0.99999) => "99.999%")]
+    #[test_case(&CssNumber::Percent(0.999994) => "99.999%")]
+    #[test_case(&CssNumber::Percent(0.999995) => ignore "100%")]
+    #[test_case(&CssNumber::Percent(0.999996) => "100%")]
+    // #[test_case(&CssNumber::Percent(0.999995) => "100%")]
+    fn test_display_css_number(number: &CssNumber) -> String {
+        number.to_string()
+    }
 }
