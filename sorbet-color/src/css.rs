@@ -107,7 +107,7 @@ pub struct CssColorNotation {
 impl std::fmt::Display for CssNumber {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         formatter.write_str(&match *self {
-            Self::Percent(percent) => float_to_nice_string(percent * 100.0),
+            Self::Percent(percent) => format!("{}%", float_to_nice_string(percent * 100.0)),
             Self::Float(float) => float_to_nice_string(float),
         })
     }
