@@ -192,6 +192,7 @@ pub(crate) fn css_number_to_float(number: &CssNumber) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    use once_cell::sync::Lazy;
     use test_case::test_case;
 
     use super::*;
@@ -244,5 +245,92 @@ mod tests {
     // #[test_case(&CssNumber::Percent(0.999995) => "100%")]
     fn test_display_css_number(number: &CssNumber) -> String {
         number.to_string()
+    }
+
+    static CSS_COLOR_NOTATIONS: Lazy<Vec<(&str, CssColorNotation)>> = Lazy::new(|| {
+        vec![
+            (
+                // 0: Rational and irrational floats
+                "rgb(127.5, 255, 0)",
+                CssColorNotation {
+                    format: CssColorType::Rgb,
+                    values: vec![
+                        CssNumber::Float(127.5),
+                        CssNumber::Float(255.0),
+                        CssNumber::Float(0.0),
+                    ],
+                },
+            ),
+            (
+                // 1: Rational and irrational percent values
+                "rgb(100%, 50%, 75.5%)",
+                CssColorNotation {
+                    format: CssColorType::Rgb,
+                    values: vec![
+                        CssNumber::Percent(1.0),
+                        CssNumber::Percent(0.5),
+                        CssNumber::Percent(0.755),
+                    ],
+                },
+            ),
+            (
+                // 2: Floats and percent values
+                "rgb(127.5, 120, 95%)",
+                CssColorNotation {
+                    format: CssColorType::Rgb,
+                    values: vec![
+                        CssNumber::Float(127.5),
+                        CssNumber::Float(120.0),
+                        CssNumber::Percent(0.95),
+                    ],
+                },
+            ),
+            (
+                // 3: RGBA with alpha as a percent value
+                "rgba(127.5, 120, 95%, 30%)",
+                CssColorNotation {
+                    format: CssColorType::Rgba,
+                    values: vec![
+                        CssNumber::Float(127.5),
+                        CssNumber::Float(120.0),
+                        CssNumber::Percent(0.95),
+                        CssNumber::Percent(0.3),
+                    ],
+                },
+            ),
+            (
+                // 4: RGBA with alpha as a float
+                "rgba(127.5, 120, 95%, 0.3)",
+                CssColorNotation {
+                    format: CssColorType::Rgba,
+                    values: vec![
+                        CssNumber::Float(127.5),
+                        CssNumber::Float(120.0),
+                        CssNumber::Percent(0.95),
+                        CssNumber::Float(0.3),
+                    ],
+                },
+            ),
+        ]
+    });
+
+    // Tests for parsing [`CssColorNotation`] from a string
+    #[test_case(CSS_COLOR_NOTATIONS[0].0 => CSS_COLOR_NOTATIONS[0].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[1].0 => CSS_COLOR_NOTATIONS[1].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[2].0 => CSS_COLOR_NOTATIONS[2].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[3].0 => CSS_COLOR_NOTATIONS[3].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[4].0 => CSS_COLOR_NOTATIONS[4].1)]
+    fn test_parse_css_color_notation(string: &str) -> CssColorNotation {
+        string.parse::<CssColorNotation>().unwrap()
+    }
+
+    // Tests for [`std::fmt::Display`] and [`ToString`] for [`CssColorNotation`]
+    #[test_case(&CSS_COLOR_NOTATIONS[0].1 => CSS_COLOR_NOTATIONS[0].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[1].1 => CSS_COLOR_NOTATIONS[1].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[2].1 => CSS_COLOR_NOTATIONS[2].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[3].1 => CSS_COLOR_NOTATIONS[3].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[4].1 => CSS_COLOR_NOTATIONS[4].0)]
+    fn test_display_css_color_notation(color: &CssColorNotation) -> String {
+        color.to_string()
     }
 }

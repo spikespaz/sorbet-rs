@@ -90,7 +90,7 @@ pub trait Color:
                 Err(css::Error::InvalidHexLength)
             }
         } else {
-            // Here we don't just parse the string and use the [`Self::TryFrom`] implimentation
+            // Here we don't just parse the string and use the [`Self::TryFrom`] implementation
             // directly because that may use the wrong one and throw an error.
             // For example, when the string is parsed as [`css::CssColorType::Rgb`] and `Self`
             // is [`Hsv`], there would be an error because [`Hsv`] doesn't have the ability to
