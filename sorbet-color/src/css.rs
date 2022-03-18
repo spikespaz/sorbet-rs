@@ -242,7 +242,6 @@ mod tests {
     #[test_case(&CssNumber::Percent(0.999994) => "99.999%")]
     #[test_case(&CssNumber::Percent(0.999995) => ignore "100%")]
     #[test_case(&CssNumber::Percent(0.999996) => "100%")]
-    // #[test_case(&CssNumber::Percent(0.999995) => "100%")]
     fn test_display_css_number(number: &CssNumber) -> String {
         number.to_string()
     }
@@ -311,6 +310,32 @@ mod tests {
                     ],
                 },
             ),
+            (
+                // 5: HSVA with maximum hue
+                "hsva(360, 30%, 60%, 0.7)",
+                CssColorNotation {
+                    format: CssColorType::Hsva,
+                    values: vec![
+                        CssNumber::Float(360.0),
+                        CssNumber::Percent(0.3),
+                        CssNumber::Percent(0.6),
+                        CssNumber::Float(0.7),
+                    ],
+                },
+            ),
+            (
+                // 6: HSLA with hue as an irrational float
+                "hsla(240.5, 30%, 60%, 0.7)",
+                CssColorNotation {
+                    format: CssColorType::Hsla,
+                    values: vec![
+                        CssNumber::Float(240.5),
+                        CssNumber::Percent(0.3),
+                        CssNumber::Percent(0.6),
+                        CssNumber::Float(0.7),
+                    ],
+                },
+            ),
         ]
     });
 
@@ -320,6 +345,8 @@ mod tests {
     #[test_case(CSS_COLOR_NOTATIONS[2].0 => CSS_COLOR_NOTATIONS[2].1)]
     #[test_case(CSS_COLOR_NOTATIONS[3].0 => CSS_COLOR_NOTATIONS[3].1)]
     #[test_case(CSS_COLOR_NOTATIONS[4].0 => CSS_COLOR_NOTATIONS[4].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[5].0 => CSS_COLOR_NOTATIONS[5].1)]
+    #[test_case(CSS_COLOR_NOTATIONS[6].0 => CSS_COLOR_NOTATIONS[6].1)]
     fn test_parse_css_color_notation(string: &str) -> CssColorNotation {
         string.parse::<CssColorNotation>().unwrap()
     }
@@ -330,6 +357,8 @@ mod tests {
     #[test_case(&CSS_COLOR_NOTATIONS[2].1 => CSS_COLOR_NOTATIONS[2].0)]
     #[test_case(&CSS_COLOR_NOTATIONS[3].1 => CSS_COLOR_NOTATIONS[3].0)]
     #[test_case(&CSS_COLOR_NOTATIONS[4].1 => CSS_COLOR_NOTATIONS[4].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[5].1 => CSS_COLOR_NOTATIONS[5].0)]
+    #[test_case(&CSS_COLOR_NOTATIONS[6].1 => CSS_COLOR_NOTATIONS[6].0)]
     fn test_display_css_color_notation(color: &CssColorNotation) -> String {
         color.to_string()
     }
