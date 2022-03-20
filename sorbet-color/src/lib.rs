@@ -117,12 +117,33 @@ pub trait Color:
     }
 }
 
-impl Color for Rgb {}
-impl Color for Rgba {}
-impl Color for Hsv {}
-impl Color for Hsva {}
-impl Color for Hsl {}
-impl Color for Hsla {}
+macro_rules! impl_color {
+    ( $( $t:ident ),+ $( , )? ) => {
+        $( impl Color for $t {} )*
+    }
+}
+
+macro_rules! impl_from_str_css {
+    ( $( $t:ident ),+ $( , )? ) => {
+        $(
+            /// Similar to [`Color::new`], this will create a color type from a valid CSS notation.
+            /// The difference is, this can be used in a situation where you want to use
+            /// [`str::parse`] instead. This will only work when the destination
+            /// type matches the parsed [`css::CssColorType`] variant, otherwise a
+            /// [`css::Error::WrongCssFormat`] is returned.
+            impl std::str::FromStr for $t {
+                type Err = crate::css::Error;
+
+                fn from_str(string: &str) -> crate::css::Result<$t> {
+                    $t::try_from(&string.parse::<crate::css::CssColorNotation>()?)
+                }
+            }
+        )*
+    }
+}
+
+impl_color!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla,);
+impl_from_str_css!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla);
 
 // #[cfg(test)]
 // mod tests {
