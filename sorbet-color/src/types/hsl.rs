@@ -83,7 +83,7 @@ impl From<Rgb> for Hsl {
             _ if xmax == other.r => 60.0 * ((other.g - other.b) / c),
             _ if xmax == other.g => 60.0 * ((other.b - other.r) / c + 2.0),
             _ if xmax == other.b => 60.0 * ((other.r - other.g) / c + 4.0),
-            _ => panic!(),
+            _ => unreachable!(),
         };
         if h < 0.0 {
             h += 360.0
