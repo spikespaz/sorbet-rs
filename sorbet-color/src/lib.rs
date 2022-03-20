@@ -121,36 +121,42 @@ pub trait Color:
 }
 
 macro_rules! impl_from_str_css {
-    ( $( $t:ident ),+ $( , )? ) => {
+    ( $( $t:ident, )+ ) => {
+        impl_from_str_css!( $( $t ),* );
+    };
+    ( $( $t:ident ),+ ) => {
         $(
             /// Similar to [`Color::new`], this will create a color type from a valid CSS notation.
             /// The difference is, this can be used in a situation where you want to use
             /// [`str::parse`] instead. This will only work when the destination
             /// type matches the parsed [`css::CssColorType`] variant, otherwise a
             /// [`css::Error::WrongCssFormat`] is returned.
-            impl std::str::FromStr for $t {
-                type Err = crate::css::Error;
+            impl ::std::str::FromStr for $t {
+                type Err = $crate::css::Error;
 
-                fn from_str(string: &str) -> crate::css::Result<$t> {
-                    $t::try_from(&string.parse::<crate::css::CssColorNotation>()?)
+                fn from_str(string: &str) -> $crate::css::Result<$t> {
+                    $t::try_from(&string.parse::<$crate::css::CssColorNotation>()?)
                 }
             }
         )*
-    }
+    };
 }
 
 macro_rules! impl_display_css {
-    ( $( $t:ident ),+ $( , )? ) => {
+    ( $( $t:ident, )+ ) => {
+        impl_display_css!( $( $t ),* );
+    };
+    ( $( $t:ident ),+ ) => {
         $(
             /// This implementation will convert a color type to a [`css::CssColorNotation`]
             /// and return a string from the resulting format.
-            impl std::fmt::Display for $t {
-                fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                    formatter.write_str(&css::CssColorNotation::from(*self).to_string())
+            impl ::std::fmt::Display for $t {
+                fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                    formatter.write_str(&$crate::css::CssColorNotation::from(*self).to_string())
                 }
             }
         )*
-    }
+    };
 }
 
 impl_from_str_css!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla);
