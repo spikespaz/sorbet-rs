@@ -139,7 +139,22 @@ macro_rules! impl_from_str_css {
     }
 }
 
+macro_rules! impl_display_css {
+    ( $( $t:ident ),+ $( , )? ) => {
+        $(
+            /// This implementation will convert a color type to a [`css::CssColorNotation`]
+            /// and return a string from the resulting format.
+            impl std::fmt::Display for $t {
+                fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                    formatter.write_str(&css::CssColorNotation::from(*self).to_string())
+                }
+            }
+        )*
+    }
+}
+
 impl_from_str_css!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla);
+impl_display_css!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla);
 
 // #[cfg(test)]
 // mod tests {
