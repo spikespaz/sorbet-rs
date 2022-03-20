@@ -14,9 +14,7 @@
     limitations under the License.
 */
 
-use std::{fmt, hash};
-
-use crate::{css, types::*};
+use crate::{css, types::*, Color};
 
 /// This structure represents colors in the RGBA color space with
 /// red, green, blue, and alpha channels..
@@ -39,21 +37,21 @@ pub struct Rgba {
     pub alpha: f64,
 }
 
+impl Color for Rgba {
+    fn hex(&self) -> String {
+        format!("#{:08X}", u32::from(*self))
+    }
+}
+
 impl Eq for Rgba {}
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Rgba {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+impl std::hash::Hash for Rgba {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.r.to_bits().hash(state);
         self.g.to_bits().hash(state);
         self.b.to_bits().hash(state);
         self.alpha.to_bits().hash(state);
-    }
-}
-
-impl fmt::Display for Rgba {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "#{:08X}", u32::from(*self))
     }
 }
 

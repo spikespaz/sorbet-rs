@@ -14,9 +14,7 @@
     limitations under the License.
 */
 
-use std::hash;
-
-use crate::{css, types::*};
+use crate::{css, types::*, Color};
 
 /// This structure represents colors in the HSL color space with
 /// hue, saturation, and lightness channels.
@@ -37,11 +35,17 @@ pub struct Hsl {
     pub l: f64,
 }
 
+impl Color for Hsl {
+    fn hex(&self) -> String {
+        Rgb::from(*self).hex()
+    }
+}
+
 impl Eq for Hsl {}
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Hsl {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+impl std::hash::Hash for Hsl {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.l.to_bits().hash(state);

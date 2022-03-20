@@ -115,12 +115,9 @@ pub trait Color:
     fn named(int: u32) -> Self {
         Rgba::from(int).into()
     }
-}
 
-macro_rules! impl_color {
-    ( $( $t:ident ),+ $( , )? ) => {
-        $( impl Color for $t {} )*
-    }
+    /// Provides a color as an RGB or RGBA-encoded hexadecimal string, prefixed with a `#` character.
+    fn hex(&self) -> String;
 }
 
 macro_rules! impl_from_str_css {
@@ -142,7 +139,6 @@ macro_rules! impl_from_str_css {
     }
 }
 
-impl_color!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla,);
 impl_from_str_css!(Rgb, Rgba, Hsv, Hsva, Hsl, Hsla);
 
 // #[cfg(test)]

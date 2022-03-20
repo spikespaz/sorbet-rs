@@ -14,9 +14,7 @@
     limitations under the License.
 */
 
-use std::{fmt, hash};
-
-use crate::{css, types::*};
+use crate::{css, types::*, Color};
 
 /// This structure represents colors in the RGB color space with
 /// red, green, and blue channels.
@@ -37,20 +35,20 @@ pub struct Rgb {
     pub b: f64,
 }
 
-impl Eq for Rgb {}
-
-#[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Rgb {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.r.to_bits().hash(state);
-        self.g.to_bits().hash(state);
-        self.b.to_bits().hash(state);
+impl Color for Rgb {
+    fn hex(&self) -> String {
+        format!("#{:06X}", u32::from(*self) >> 8)
     }
 }
 
-impl fmt::Display for Rgb {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "#{:06X}", u32::from(*self) >> 8)
+impl Eq for Rgb {}
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl std::hash::Hash for Rgb {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.r.to_bits().hash(state);
+        self.g.to_bits().hash(state);
+        self.b.to_bits().hash(state);
     }
 }
 

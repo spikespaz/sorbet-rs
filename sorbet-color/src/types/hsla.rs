@@ -14,9 +14,7 @@
     limitations under the License.
 */
 
-use std::hash;
-
-use crate::{css, types::*};
+use crate::{css, types::*, Color};
 
 /// This structure represents colors in the HSLA color space with
 /// hue, saturation, lightness and alpha channels.
@@ -39,11 +37,17 @@ pub struct Hsla {
     pub alpha: f64,
 }
 
+impl Color for Hsla {
+    fn hex(&self) -> String {
+        Rgba::from(*self).hex()
+    }
+}
+
 impl Eq for Hsla {}
 
 #[allow(clippy::derive_hash_xor_eq)]
-impl hash::Hash for Hsla {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+impl std::hash::Hash for Hsla {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.h.to_bits().hash(state);
         self.s.to_bits().hash(state);
         self.l.to_bits().hash(state);
