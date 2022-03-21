@@ -80,15 +80,7 @@ pub trait Color:
         let string = string.as_ref().replace(' ', "").to_ascii_lowercase();
 
         if let Some(string) = string.strip_prefix('#') {
-            if !string.bytes().all(|b| b.is_ascii_hexdigit()) {
-                Err(css::Error::InvalidHexChars)
-            } else if string.len() == 6 {
-                Ok(Rgb::from(string).into())
-            } else if string.len() == 8 {
-                Ok(Rgba::from(string).into())
-            } else {
-                Err(css::Error::InvalidHexLength)
-            }
+            Self::from_hex(string)
         } else {
             // Here we don't just parse the string and use the [`Self::TryFrom`] implementation
             // directly because that may use the wrong one and throw an error.
@@ -106,6 +98,31 @@ pub trait Color:
                 css::CssColorType::Hsl => Hsl::try_from(&interm)?.into(),
                 css::CssColorType::Hsla => Hsla::try_from(&interm)?.into(),
             })
+        }
+    }
+
+    /// Takes a hexadecimal-encoded RGB or RGBA string,
+    /// and coerces to an explicit or inferred color type.
+    /// With this constructor the `#` prefix is optional, but this expects no whitespace.
+    ///
+    /// If you want an [`Rgb`] or [`Rgba`] type, it is recommended to use either
+    /// `Rgb::from(string)` or `Rgba::from(string)`, which do not return a [`css::Result`]
+    /// and will simply panic on invalid input.
+    fn from_hex<S>(string: S) -> css::Result<Self>
+    where
+        S: AsRef<str>,
+    {
+        let mut string = string.as_ref();
+        string = string.strip_prefix('#').unwrap_or(string);
+
+        if !string.bytes().all(|b| b.is_ascii_hexdigit()) {
+            Err(css::Error::InvalidHexChars)
+        } else if string.len() == 6 {
+            Ok(Rgb::from(string).into())
+        } else if string.len() == 8 {
+            Ok(Rgba::from(string).into())
+        } else {
+            Err(css::Error::InvalidHexLength)
         }
     }
 

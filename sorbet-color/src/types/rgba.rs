@@ -124,8 +124,10 @@ impl From<&str> for Rgba {
     fn from(string: &str) -> Self {
         let string = string.strip_prefix('#').unwrap_or(string);
 
+        const EXPECT_MSG: &str = "invalid hexadecimal string";
+
         let Rgb { r, g, b } = Rgb::from(string);
-        let alpha = u8::from_str_radix(&string[6..8], 16).expect("invalid hexadecimal string");
+        let alpha = u8::from_str_radix(&string[6..8], 16).expect(EXPECT_MSG);
 
         Self {
             r: r as f64 / 255.0,

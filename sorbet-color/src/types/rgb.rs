@@ -117,9 +117,11 @@ impl From<&str> for Rgb {
     fn from(string: &str) -> Self {
         let string = string.strip_prefix('#').unwrap_or(string);
 
-        let r = u8::from_str_radix(&string[0..2], 16).expect("invalid hexadecimal string");
-        let g = u8::from_str_radix(&string[2..4], 16).expect("invalid hexadecimal string");
-        let b = u8::from_str_radix(&string[4..6], 16).expect("invalid hexadecimal string");
+        const EXPECT_MSG: &str = "invalid hexadecimal string";
+
+        let r = u8::from_str_radix(&string[0..2], 16).expect(EXPECT_MSG);
+        let g = u8::from_str_radix(&string[2..4], 16).expect(EXPECT_MSG);
+        let b = u8::from_str_radix(&string[4..6], 16).expect(EXPECT_MSG);
 
         Self {
             r: r as f64 / 255.0,
