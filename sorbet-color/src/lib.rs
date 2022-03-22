@@ -59,6 +59,12 @@ pub trait Color:
     + From<Hsva>
     + From<Hsl>
     + From<Hsla>
+    + Into<Rgb>
+    + Into<Rgba>
+    + Into<Hsv>
+    + Into<Hsva>
+    + Into<Hsl>
+    + Into<Hsla>
 {
     /// This constructor takes a CSS-compatible functional notation for a color, and coerces it to an
     /// explicit or inferred type. This will return [`css::Error`] variants if the parsing fails.
