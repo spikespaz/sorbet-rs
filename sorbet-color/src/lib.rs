@@ -53,8 +53,10 @@ pub trait Color:
     /// When providing a hexadecimal color, the `#` prefix is required, whereas the unchecked
     /// [`From<&str>`] on [`Rgb`] and [`Rgba`] has no such restriction.
     ///
-    /// Note that if any parameters inside the string are not within a channel's valid range,
-    /// they will be clamped instead of wrapped.
+    /// ~~Note that if any parameters inside the string are not within a channel's valid range,
+    /// they will be clamped instead of wrapped.~~
+    /// Numbers parsing to values outside the acceptable range for the fields of a color type
+    /// may result in undefined behavior.
     ///
     /// See the [reference on W3 Schools](https://www.w3schools.com/cssref/css_colors_legal.asp)
     /// for valid input strings. Current supported prefixes match the type names for color structures
