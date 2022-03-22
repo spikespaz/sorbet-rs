@@ -129,7 +129,7 @@ pub trait Color:
     /// This constructor takes an unsigned 32-bit integer and coerces it to an
     /// explicit or inferred type. This should be used when using color constants
     /// from the [`named`] module, and the signature is named accordingly.
-    fn named(int: u32) -> Self {
+    fn from_int(int: u32) -> Self {
         Rgba::from(int).into()
     }
 

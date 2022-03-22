@@ -10,7 +10,7 @@
 //!
 //! To get a color structure from it use the [`From<u32>`] implementation.
 //! Currently only [`crate::types::Rgb`] and [`crate::types::Rgba`] implement this.
-//! For a constructor that can coerce to an explicit or implicit type, see [`crate::Color::named`].
+//! For a constructor that can coerce to an explicit or implicit type, see [`crate::Color::from_int`].
 
 pub const ALICEBLUE: u32 = 0xF0F8FFFF;
 pub const ANTIQUEWHITE: u32 = 0xFAEBD7FF;
