@@ -141,6 +141,32 @@ pub trait Color:
 
     /// Provides a color as an RGB or RGBA-encoded hexadecimal string, prefixed with a `#` character.
     fn hex(&self) -> String;
+
+    /// Provides an 32-bit integer, encoded from RGBA 8-bit values.
+    /// Because in Rust endianness is platform dependant, the byte-order of this may be different
+    /// depending on your system.
+    ///
+    /// On most platforms the encoded integer will be in ABGR32 format, where alpha is the lowest
+    /// byte and red is the highest.
+    ///
+    /// See [RGBA color model representation](https://en.wikipedia.org/wiki/RGBA_color_model#Representation)
+    /// on Wikipedia.
+    ///
+    /// If you have an [`Rgb`] or [`Rgba`] type, prefer the `From<...> for u32` implementations
+    /// on those types.
+    fn int(&self) -> u32 {
+        Into::<Rgba>::into(*self).into()
+    }
+
+    /// Returns a `[u8; 3]`  with red, green, and blue values as unsigned 8-bit integers.
+    fn rgb_array(&self) -> [u8; 3] {
+        Into::<Rgb>::into(*self).into()
+    }
+
+    /// Returns a `[u8; 4]`  with red, green, blue, and alpha values as unsigned 8-bit integers.
+    fn rgba_array(&self) -> [u8; 4] {
+        Into::<Rgba>::into(*self).into()
+    }
 }
 
 macro_rules! impl_from_str_css {
