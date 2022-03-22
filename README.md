@@ -53,3 +53,41 @@ while the minor digit will signify additions that may not be stabilized.
 [2107]: https://semver.org/#spec-item-7
 [2108]: https://semver.org/#spec-item-8
 [2109]: https://semver.org/#spec-item-9
+
+## License
+
+> Copyright &copy; 2022 Jacob Birkett
+
+This project is provided under the [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0).
+
+<table>
+  <tr>
+    <th>&#x1F7E2; Permissions</th>
+    <th>&#x1F7E1; Conditions</th>
+    <th>&#x1F534; Limitations</th>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>Commercial use</li>
+        <li>Distribution</li>
+        <li>Modification</li>
+        <li>Patent use</li>
+        <li>Private use</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>License and copyright notice</li>
+        <li>State changes</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>Liability</li>
+        <li>Trademark use</li>
+        <li>Warranty</li>
+      </ul>
+    </td>
+  </tr>
+</table>
